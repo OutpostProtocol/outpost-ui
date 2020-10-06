@@ -8,6 +8,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Helmet from 'react-helmet'
+import Head from 'next/head'
 
 function SEO ({ canonical, description, lang, meta, title, image }) {
   const siteData = {
@@ -27,52 +28,24 @@ function SEO ({ canonical, description, lang, meta, title, image }) {
   }
 
   return (
-    <Helmet
-      htmlAttributes={{
-        lang
-      }}
-      title={metaData.title}
-      titleTemplate={siteData.title === metaData.title ? siteData.title : `${metaData.title} - ${siteData.title}`}
-      link={ canonical ? [{ rel: 'canonical', key: canonical, href: canonical }] : [] }
-      meta={[
-        {
-          name: 'description',
-          content: metaData.description
-        },
-        {
-          property: 'og:title',
-          content: metaData.title
-        },
-        {
-          property: 'og:image',
-          content: metaData.image
-        },
-        {
-          property: 'og:description',
-          content: metaData.description
-        },
-        {
-          property: 'og:type',
-          content: 'website'
-        },
-        {
-          name: 'twitter:card',
-          content: 'summary'
-        },
-        {
-          name: 'twitter:creator',
-          content: siteData.twitterUsername
-        },
-        {
-          name: 'twitter:title',
-          content: metaData.title
-        },
-        {
-          name: 'twitter:description',
-          content: metaData.description
-        }
-      ].concat(meta)}
-    />
+    <Head>
+      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+      <link rel="manifest" href="/site.webmanifest" />
+      <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+      <meta name="theme-color" content="#ffffff" />
+      <title>{metaData.title}</title>
+      <link ref="canonical" key='canonical' href={canonical} />
+      <meta name='description' content={metaData.description} />
+      <meta name='og:title' content={metaData.title} />
+      <meta name='og:image' content={metaData.image} />
+      <meta name='og:description' content={metaData.description} />
+      <meta name='og:type' content='website' />
+      <meta name='twitter:card' content='summary' />
+      <meta name='twitter:title' content={metaData.title} />
+      <meta name='twitter:description' content={metaData.description} />
+    </Head>
   )
 }
 
