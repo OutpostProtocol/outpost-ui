@@ -190,9 +190,6 @@ const WalletModal = ({ open, handleClose, setPrevLoading }) => {
       return library?.provider?.wc?.protocol === 'wc'
     }
 
-    console.log(isGettingToken, 'WHETHER GETTING TOKEN')
-    console.log(isWc(), 'WHETHER IS WC')
-
     if (isGettingToken && isWc()) {
       setShowMsg(true)
     }
@@ -204,8 +201,6 @@ const WalletModal = ({ open, handleClose, setPrevLoading }) => {
 
   useEffect(() => {
     const handleFetchToken = async () => {
-      console.log('handle fetch called')
-      console.log(isGettingToken, 'WHETHER ALREADY GETTING THE TOKEN')
       if (isGettingToken) return
       await fetchToken()
       handleClose()
@@ -228,7 +223,6 @@ const WalletModal = ({ open, handleClose, setPrevLoading }) => {
       setCurAccount(account)
 
       const token = store.get(`${LOGIN_TOKEN}.${account}`)
-      console.log(token, 'THE LOGIN TOKEN')
       if (!token) {
         handleFetchToken()
       } else {
