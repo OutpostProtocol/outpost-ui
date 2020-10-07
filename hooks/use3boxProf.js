@@ -1,7 +1,5 @@
 import { getProfile } from '3box/lib/api'
-import {
-  useState, useEffect
-} from 'react'
+import { useState, useEffect } from 'react'
 
 export const use3boxProf = (did) => {
   const [profImage, setProfImage] = useState(null)

@@ -2,7 +2,6 @@ import React from 'react'
 import { styled } from '@material-ui/core/styles'
 import moment from 'moment'
 
-import { use3boxProf } from '../../hooks/use3boxProf'
 import ProfileImage from '../Profile/ProfileImage'
 import { shortenAddress } from '../../utils'
 

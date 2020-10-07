@@ -1,6 +1,4 @@
-import React, {
-  useEffect, useState
-} from 'react'
+import React, { useEffect, useState } from 'react'
 import { styled } from '@material-ui/core/styles'
 import makeBlockie from 'ethereum-blockies-base64'
 import { use3boxProf } from '../../hooks/use3boxProf'
@@ -32,7 +30,7 @@ const ProfileImage = ({ redirectURL, imgSrc, userAddress }) => {
     if (!imgSrc) {
       setProfileImage()
     }
-  }, [userAddress, profImage])
+  }, [userAddress, profImage, imgSrc])
 
   return (
     <>

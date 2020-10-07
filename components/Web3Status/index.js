@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import { styled } from '@material-ui/core/styles'
-import {
-  Button, CircularProgress
-} from '@material-ui/core'
+import { Button, CircularProgress } from '@material-ui/core'
 import { useWeb3React } from '@web3-react/core'
 
 import { shortenAddress } from '../../utils'

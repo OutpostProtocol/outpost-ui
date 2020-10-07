@@ -1,6 +1,4 @@
-import React, {
-  useState, useEffect
-} from 'react'
+import React, { useState, useEffect } from 'react'
 import { styled } from '@material-ui/core/styles'
 import { CircularProgress } from '@material-ui/core'
 import Iframe from 'react-iframe'
@@ -193,7 +191,7 @@ const LoggedInPost = ({ backPath, txId }) => {
   )
 }
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps (context) {
   const OUTPOST_API = process.env.NEXT_PUBLIC_OUTPOST_API
   const { txId } = context.params
 

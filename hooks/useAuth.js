@@ -1,14 +1,8 @@
-import {
-  useCallback, useContext
-} from 'react'
+import { useCallback, useContext } from 'react'
 import store from 'store'
-import {
-  ERROR_TYPES, LOGIN_TOKEN
-} from '../constants'
+import { ERROR_TYPES, LOGIN_TOKEN } from '../constants'
 import { useWeb3React } from '@web3-react/core'
-import {
-  useMutation, gql
-} from '@apollo/client'
+import { useMutation, gql } from '@apollo/client'
 import { ethers } from 'ethers'
 import { AuthContext } from '../context/Auth'
 
@@ -42,7 +36,8 @@ const useAuth = () => {
     (loginRes) => {
       const { error } = loginRes
       if (error) {
-        const info = {
+        // TODO: ADD MIXPANEL
+        const info = { // eslint-disable-line
           type: ERROR_TYPES.login,
           message: error.message
         }

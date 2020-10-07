@@ -101,6 +101,8 @@ const Post = ({ post, comments }) => {
   }
 
   const handleDelete = async () => {
+    alert('PLEASE CONTACT DEVS TO ADD ABILITY TO DELETE POSTS')
+    /*
     setIsDeleting(true)
     const res = await deletePost(txId, community.txId)
     if (res.status === 200 && res.data.status === 200) {
@@ -115,6 +117,7 @@ const Post = ({ post, comments }) => {
       alert('Error deleting post')
     }
     setIsDeleting(false)
+    */
   }
 
   return (

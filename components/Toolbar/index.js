@@ -2,9 +2,7 @@ import React, {
 } from 'react'
 import { styled } from '@material-ui/core/styles'
 import { IconButton } from '@material-ui/core'
-import {
-  CreateOutlined, ChevronLeft
-} from '@material-ui/icons'
+import { CreateOutlined, ChevronLeft } from '@material-ui/icons'
 import { useCommunity } from '../../hooks'
 import { useWeb3React } from '@web3-react/core'
 import { useRouter } from 'next/router'

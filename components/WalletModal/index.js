@@ -12,12 +12,8 @@ import {
 import { Alert } from '@material-ui/lab'
 import { styled } from '@material-ui/core/styles'
 import { Close } from '@material-ui/icons'
-import {
-  useWeb3React, UnsupportedChainIdError
-} from '@web3-react/core'
-import {
-  WalletConnectConnector, UserRejectedRequestError
-} from '@web3-react/walletconnect-connector'
+import { useWeb3React, UnsupportedChainIdError } from '@web3-react/core'
+import { WalletConnectConnector, UserRejectedRequestError } from '@web3-react/walletconnect-connector'
 import { InjectedConnector } from '@web3-react/injected-connector'
 import store from 'store'
 
@@ -131,7 +127,8 @@ const WalletModal = ({ open, handleClose, setPrevLoading }) => {
       return
     }
 
-    const info = {
+    // TODO: add mixpanel
+    const info = { // eslint-disable-line
       type: ERROR_TYPES.login,
       message: error.message
     }

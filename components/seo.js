@@ -7,7 +7,6 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import Helmet from 'react-helmet'
 import Head from 'next/head'
 
 function SEO ({ canonical, description, lang, meta, title, image }) {

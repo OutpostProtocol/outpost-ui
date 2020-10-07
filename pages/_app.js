@@ -1,3 +1,4 @@
+import React from 'react'
 import {
   ThemeProvider,
   StylesProvider,
@@ -64,7 +65,7 @@ const getLibrary = (provider, connector) => {
   return window.web3
 }
 
-function OutpostApp({ Component, pageProps }) {
+function OutpostApp ({ Component, pageProps }) {
   return (
     <ApolloProvider client={client} >
       <StylesProvider injectFirst >

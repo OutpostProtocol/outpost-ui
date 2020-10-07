@@ -6,7 +6,8 @@ import { ERROR_TYPES } from '../constants'
 
 export const useErrorReporting = (type, error, request) => {
   if (error?.message) {
-    const info = {
+    // TODO: add mixpanel so we can error report
+    const info = { // eslint-disable-line
       type,
       message: error.message,
       request
