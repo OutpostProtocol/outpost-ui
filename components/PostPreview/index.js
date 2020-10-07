@@ -88,7 +88,7 @@ const PostPreview = ({ post }) => {
   const router = useRouter()
 
   const handleRedirect = () => {
-    const url = '/post/' + post.txId
+    const url = `/${router.query.comSlug}/post/${post.txId}`
     router.push(url)
   }
 

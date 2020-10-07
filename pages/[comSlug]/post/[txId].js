@@ -6,11 +6,11 @@ import { useWeb3React } from '@web3-react/core'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 
-import useAuth from '../../hooks/useAuth'
-import { useOnePost } from '../../hooks/usePosts'
-import Post from '../../components/Post'
-import Toolbar from '../../components/Toolbar'
-import SEO from '../../components/seo'
+import useAuth from '../../../hooks/useAuth'
+import { useOnePost } from '../../../hooks/usePosts'
+import Post from '../../../components/Post'
+import Toolbar from '../../../components/Toolbar'
+import SEO from '../../../components/seo'
 
 const PostContainer = styled('div')({
   margin: '5em 0',
