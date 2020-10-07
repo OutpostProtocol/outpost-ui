@@ -25,6 +25,8 @@ export const GET_POSTS = gql`
       }
       user {
         address
+        name
+        image
       }
     }
   }
@@ -47,6 +49,8 @@ export const GET_POST = gql`
         }
         user {
           address
+          name
+          image
         }
       }
       comments {
@@ -54,6 +58,8 @@ export const GET_POST = gql`
         timestamp
         user {
           address
+          name
+          image
         }
       }
       userBalance

@@ -145,7 +145,7 @@ const Post = ({ post, comments }) => {
         </PostMetaData>
         <SubHeader>
           <PostContext
-            userAddress={post.user.address}
+            user={post.user}
             communityName={post.community.name}
             timestamp={post.timestamp}
           />

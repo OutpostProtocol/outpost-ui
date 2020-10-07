@@ -4,8 +4,6 @@ import { styled } from '@material-ui/core/styles'
 import moment from 'moment'
 import LockOpenIcon from '@material-ui/icons/LockOpen'
 
-import { use3boxProf } from '../../hooks/use3boxProf'
-
 const PostContainer = styled('div')({
   padding: '10px',
   'border-radius': '4px',
@@ -87,7 +85,6 @@ const DATE_FORMAT = 'MMMM D YYYY'
 
 const PostPreview = ({ post }) => {
   const { title, subtitle, user, featuredImg, timestamp, community } = post
-  const { name } = use3boxProf(user.address)
   const router = useRouter()
 
   const handleRedirect = () => {
@@ -115,7 +112,7 @@ const PostPreview = ({ post }) => {
         </Subtitle>
         <Context>
           <Author>
-            {name}
+            {user.name}
           </Author>
           <Date>
             {moment.unix(timestamp).format(DATE_FORMAT)}

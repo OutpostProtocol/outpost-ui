@@ -108,9 +108,6 @@ const MastHead = () => {
   if (error) return `Error! ${error.message}`
 
   const { imageTxId, name, description, tokenSymbol, tokenAddress, owner } = data.community[0]
-
-  console.log('THE OWNER')
-
   return (
     <Container>
       <PaddingContainer>

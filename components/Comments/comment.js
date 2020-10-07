@@ -31,7 +31,7 @@ const Comment = ({ comment }) => {
   return (
     <CommentContainer>
       <ContextContainer
-        userAddress={user.address}
+        user={user}
         timestamp={timestamp}
         dateFormat={'DD MMMM'}
       />

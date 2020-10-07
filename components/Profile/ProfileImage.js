@@ -18,8 +18,8 @@ const Avatar = styled('img')({
   }
 })
 
-const ProfileImage = ({ redirectURL, userAddress }) => {
-  const [imageSrc, setImageSrc] = useState('https://picsum.photos/40/40/?blur')
+const ProfileImage = ({ redirectURL, imgSrc, userAddress }) => {
+  const [imageSrc, setImageSrc] = useState(imgSrc || 'https://picsum.photos/40/40/?blur')
   const { profImage } = use3boxProf(userAddress)
 
   useEffect(() => {
@@ -29,7 +29,9 @@ const ProfileImage = ({ redirectURL, userAddress }) => {
       setImageSrc(img)
     }
 
-    setProfileImage()
+    if (!imgSrc) {
+      setProfileImage()
+    }
   }, [userAddress, profImage])
 
   return (
