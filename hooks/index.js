@@ -54,7 +54,10 @@ export const useCommunity = () => {
         description
         imageTxId
         readRequirement
-        owner
+        owner {
+          name
+          image
+        }
       }
     }
   `

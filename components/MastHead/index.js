@@ -4,7 +4,6 @@ import { Button } from '@material-ui/core'
 import Iframe from 'react-iframe'
 
 import { useCommunity } from '../../hooks'
-import { use3boxProf } from '../../hooks/use3boxProf'
 
 const Container = styled('div')({
   'background-color': '#F2F2F2',
@@ -104,15 +103,13 @@ const FrameBorder = styled('div')({
 const MastHead = () => {
   const { data, loading, error } = useCommunity()
   const [showModal, toggleModal] = useState(false)
-  const creatorProf = use3boxProf(data && data.community && data.community[0].owner)
-
-  const creatorImg = creatorProf.profImage
-  const creatorName = creatorProf.name
 
   if (loading) return null
   if (error) return `Error! ${error.message}`
 
-  const { imageTxId, name, description, tokenSymbol, tokenAddress } = data.community[0]
+  const { imageTxId, name, description, tokenSymbol, tokenAddress, owner } = data.community[0]
+
+  console.log('THE OWNER')
 
   return (
     <Container>
@@ -141,8 +138,8 @@ const MastHead = () => {
         <Header>
           <HeaderImages>
             <CommunityImage src={`https://arweave.net/${imageTxId}`} alt={name} />
-            {creatorImg &&
-            <ProfileImage src={creatorImg} alt={`${name} Creator`} />
+            {owner.image &&
+            <ProfileImage src={owner.image} alt={`${name} Creator`} />
             }
           </HeaderImages>
           <CommunityInfo>
@@ -150,8 +147,8 @@ const MastHead = () => {
               {name}
             </Name>
             <Author>
-              {creatorName &&
-                `By ${creatorName}`
+              {owner.name &&
+                `By ${owner.name}`
               }
             </Author>
             <Description>
