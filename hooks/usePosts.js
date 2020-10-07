@@ -5,10 +5,11 @@ import {
 } from '@apollo/client'
 import { useErrorReporting } from './index'
 import { ERROR_TYPES } from '../constants'
+import { useRouter } from 'next/router'
 
 export const GET_POSTS = gql`
-  query posts($communityTxId: String) {
-    posts (communityTxId: $communityTxId) {
+  query posts($slug: String) {
+    posts (communitySlug: $slug) {
       id
       title
       subtitle
@@ -17,14 +18,11 @@ export const GET_POSTS = gql`
       featuredImg
       community {
         name
-        txId
         readRequirement
         tokenSymbol
       }
       user {
-        address
         name
-        image
       }
     }
   }
@@ -111,9 +109,13 @@ export const usePostPreview = (txId) => {
 }
 
 const usePosts = (communityTxId) => {
+  const router = useRouter()
+  const slug = router.query.comSlug
+
   const result = useQuery(GET_POSTS, {
-    variables: { communityTxId }
+    variables: { slug }
   })
+
   useErrorReporting(ERROR_TYPES.query, result?.error, 'GET_POSTS')
   return result
 }

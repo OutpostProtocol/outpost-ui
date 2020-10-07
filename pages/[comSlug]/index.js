@@ -43,7 +43,7 @@ const CommunityPage = ({ community }) => {
           <FeedHeader>
           READ THE LATEST
           </FeedHeader>
-          <Feed />
+          <Feed/>
         </FeedContainer>
       </CommunityProvider>
     </ Container>
@@ -54,7 +54,7 @@ export async function getServerSideProps (context) {
   const slug = context.params.comSlug
 
   const query = `
-    query community($slug: String) {
+    query ComPage($slug: String) {
       community(slug: $slug) {
         id
         name
