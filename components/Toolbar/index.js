@@ -3,7 +3,7 @@ import React, {
 import { styled } from '@material-ui/core/styles'
 import { IconButton } from '@material-ui/core'
 import { CreateOutlined, ChevronLeft } from '@material-ui/icons'
-import { useCommunity } from '../../hooks'
+import { useCommunity } from '../../context/Community'
 import { useWeb3React } from '@web3-react/core'
 import { useRouter } from 'next/router'
 
@@ -103,11 +103,7 @@ const LeftToolbar = styled('div')({
 
 const CommonToolbar = ({ children }) => {
   const router = useRouter()
-  const { data, loading, error } = useCommunity()
-
-  if (loading || error) return null
-
-  const { imageTxId, name } = data.community[0]
+  const community = useCommunity()
 
   return (
     <ToolbarContainer>
@@ -122,17 +118,19 @@ const CommonToolbar = ({ children }) => {
             <ChevronLeft />
           </BackButton>
         }
-        <CurCommunity>
-          <ImageContainer>
-            <CommunityImage
-              src={`https://arweave.net/${imageTxId}`}
-              alt={name}
-            />
-          </ImageContainer>
-          <CommunityName>
-            {name}
-          </CommunityName>
-        </CurCommunity>
+        {community &&
+          <CurCommunity>
+            <ImageContainer>
+              <CommunityImage
+                src={`https://arweave.net/${community.imageTxId}`}
+                alt={community.name}
+              />
+            </ImageContainer>
+            <CommunityName>
+              {community.name}
+            </CommunityName>
+          </CurCommunity>
+        }
       </LeftToolbar>
       <ProfileContainer>
         {children}

@@ -3,7 +3,7 @@ import { styled } from '@material-ui/core/styles'
 import { Button } from '@material-ui/core'
 import Iframe from 'react-iframe'
 
-import { useCommunity } from '../../hooks'
+import { useCommunity } from '../../context/Community'
 
 const Container = styled('div')({
   'background-color': '#F2F2F2',
@@ -101,13 +101,10 @@ const FrameBorder = styled('div')({
 })
 
 const MastHead = () => {
-  const { data, loading, error } = useCommunity()
+  const community = useCommunity()
   const [showModal, toggleModal] = useState(false)
 
-  if (loading) return null
-  if (error) return `Error! ${error.message}`
-
-  const { imageTxId, name, description, tokenSymbol, tokenAddress, owner } = data.community[0]
+  const { imageTxId, name, description, tokenSymbol, tokenAddress, owner } = community
   return (
     <Container>
       <PaddingContainer>

@@ -1,10 +1,14 @@
 import React from 'react'
 import { styled } from '@material-ui/core/styles'
+import axios from 'axios'
 
+import { CommunityProvider } from '../../context/Community'
 import SEO from '../../components/seo'
 import Feed from '../../components/Feed'
 import Toolbar from '../../components/Toolbar'
 import MastHead from '../../components/MastHead'
+
+const OUTPOST_API = process.env.NEXT_PUBLIC_OUTPOST_API
 
 const FeedContainer = styled('div')({
   '@media only screen and (min-width: 800px)': {
@@ -24,22 +28,64 @@ const Container = styled('div')({
   'overflow-x': 'hidden'
 })
 
-const IndexPage = () => {
+const CommunityPage = ({ community }) => {
   return (
     <Container>
-      <SEO
-        image='https://arweave.net/YTut0yDqWiDt3-5xM0Y8Lskp68wY2OxCVBHxB4mdCd4'
-      />
-      <Toolbar />
-      <MastHead />
-      <FeedContainer>
-        <FeedHeader>
+      <CommunityProvider
+        community={community}
+      >
+        <SEO
+          image={`https://arweave.net/${community.imageTxId}`}
+        />
+        <Toolbar />
+        <MastHead />
+        <FeedContainer>
+          <FeedHeader>
           READ THE LATEST
-        </FeedHeader>
-        <Feed />
-      </FeedContainer>
+          </FeedHeader>
+          <Feed />
+        </FeedContainer>
+      </CommunityProvider>
     </ Container>
   )
 }
 
-export default IndexPage
+export async function getServerSideProps (context) {
+  const slug = context.params.comSlug
+
+  const query = `
+    query community($slug: String) {
+      community(slug: $slug) {
+        id
+        name
+        txId
+        tokenAddress
+        tokenSymbol
+        description
+        imageTxId
+        readRequirement
+        owner {
+          name
+          image
+        }
+      }
+    }
+  `
+
+  const res = await axios.post(OUTPOST_API, {
+    query,
+    variables: {
+      slug
+    }
+  })
+
+  const community = res.data.data.community[0]
+
+  return {
+    props: {
+      community
+    }
+  }
+}
+
+export default CommunityPage

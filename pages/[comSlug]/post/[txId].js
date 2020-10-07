@@ -6,6 +6,7 @@ import { useWeb3React } from '@web3-react/core'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 
+import { CommunityProvider } from '../../../context/Community'
 import useAuth from '../../../hooks/useAuth'
 import { useOnePost } from '../../../hooks/usePosts'
 import Post from '../../../components/Post'
@@ -69,7 +70,7 @@ const LoginProgressContainer = styled('div')({
   'justify-content': 'center'
 })
 
-const PostPage = ({ postPreview }) => {
+const PostPage = ({ postPreview, community }) => {
   const router = useRouter()
   const { txId } = router.query
   const { account } = useWeb3React()
@@ -78,8 +79,8 @@ const PostPage = ({ postPreview }) => {
   if (!account || !authToken) {
     return (
       <PostLayout
-        txId={txId}
         context={postPreview}
+        community={community}
       >
         <SignInMessage>
           <div>
@@ -91,17 +92,25 @@ const PostPage = ({ postPreview }) => {
   }
 
   return (
-    <LoggedInPost
-      txId={txId}
-    />
+    <PostLayout
+      context={postPreview}
+      community={community}
+    >
+      <LoggedInPost
+        txId={txId}
+        community={community}
+      />
+    </PostLayout>
   )
 }
 
-const PostLayout = ({ children, backPath, txId, context }) => {
+const PostLayout = ({ children, context, community }) => {
   const { title, subtitle, featuredImage } = context || {}
 
   return (
-    <>
+    <CommunityProvider
+      community={community}
+    >
       <SEO
         title={title}
         description={subtitle}
@@ -111,7 +120,7 @@ const PostLayout = ({ children, backPath, txId, context }) => {
       <>
         {children}
       </>
-    </>
+    </CommunityProvider>
   )
 }
 
@@ -135,11 +144,9 @@ const LoggedInPost = ({ backPath, txId }) => {
 
   if (loading) {
     return (
-      <PostLayout>
-        <LoginProgressContainer>
-          <CircularProgress />
-        </LoginProgressContainer>
-      </PostLayout>
+      <LoginProgressContainer>
+        <CircularProgress />
+      </LoginProgressContainer>
     )
   }
 
@@ -148,55 +155,49 @@ const LoggedInPost = ({ backPath, txId }) => {
   const hasInsufficientBalance = userBalance < readRequirement
   if (hasInsufficientBalance) {
     return (
-      <PostLayout>
-        <IframeContainer>
-          <MessageContainer>
-            <Message>
+      <IframeContainer>
+        <MessageContainer>
+          <Message>
               You need {readRequirement} ${tokenSymbol} to access this post.
-            </Message>
-            <Message>
+          </Message>
+          <Message>
               Your Balance: {userBalance}
-            </Message>
-            <Message>
+          </Message>
+          <Message>
               Buy ${tokenSymbol} on uniswap
-            </Message>
-          </MessageContainer>
-          <StyledIFrame
-            url={`https://uniswap.exchange/?outputCurrency=${tokenAddress}`}
-            height={'600px'}
-            width={'700px'}
-            frameBorder="0"
-            style={{ border: 'none', outline: 'none', 'border-radius': '10px' }}
-            display="initial"
-            position="relative"
-          />
-        </ IframeContainer>
-      </PostLayout>
+          </Message>
+        </MessageContainer>
+        <StyledIFrame
+          url={`https://uniswap.exchange/?outputCurrency=${tokenAddress}`}
+          height={'600px'}
+          width={'700px'}
+          frameBorder="0"
+          style={{ border: 'none', outline: 'none', 'border-radius': '10px' }}
+          display="initial"
+          position="relative"
+        />
+      </ IframeContainer>
     )
   }
 
   const post = postData.post
   const comments = postData.comments
   return (
-    <PostLayout
-      txId={txId}
-    >
-      <PostContainer>
-        <Post
-          post={post}
-          comments={comments}
-        />
-      </PostContainer>
-    </PostLayout>
+    <PostContainer>
+      <Post
+        post={post}
+        comments={comments}
+      />
+    </PostContainer>
   )
 }
 
 export async function getServerSideProps (context) {
   const OUTPOST_API = process.env.NEXT_PUBLIC_OUTPOST_API
-  const { txId } = context.params
+  const { txId, comSlug } = context.params
 
   const query = `
-    query posts($txId: String!) {
+    query postpage($txId: String!, $slug: String!) {
       postPreview (txId: $txId) {
         id
         title
@@ -206,21 +207,38 @@ export async function getServerSideProps (context) {
         featuredImg
         canonicalLink
       }
+      community(slug: $slug) {
+        id
+        name
+        txId
+        tokenAddress
+        tokenSymbol
+        description
+        imageTxId
+        readRequirement
+        owner {
+          name
+          image
+        }
+      }
     }
   `
 
   const res = await axios.post(OUTPOST_API, {
     query,
     variables: {
-      txId
+      txId,
+      slug: comSlug
     }
   })
 
   const { postPreview } = res.data.data
+  const community = res.data.data.community[0]
 
   return {
     props: {
-      postPreview
+      postPreview,
+      community
     }
   }
 }
