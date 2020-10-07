@@ -88,7 +88,7 @@ const DATE_FORMAT = 'MMMM D YYYY'
 const PostPreview = ({ post }) => {
   const { title, subtitle, user, featuredImg, timestamp, community } = post
   const { name } = use3boxProf(user.address)
-  const router = useRouter
+  const router = useRouter()
 
   const handleRedirect = () => {
     const url = '/post/' + post.txId

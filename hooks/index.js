@@ -11,7 +11,6 @@ export const useErrorReporting = (type, error, request) => {
       message: error.message,
       request
     }
-    console.log('error', error.message)
   }
 }
 

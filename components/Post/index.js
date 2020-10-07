@@ -11,7 +11,6 @@ import {
 import Share from '../Share'
 import LoadingBackdrop from '../LoadingBackdrop'
 import Comments from '../Comments'
-import { deletePost } from '../../uploaders/blog-post'
 import { GET_POSTS } from '../../hooks/usePosts'
 import { useErrorReporting } from '../../hooks'
 import { ERROR_TYPES } from '../../constants'

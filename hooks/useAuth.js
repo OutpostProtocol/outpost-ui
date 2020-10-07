@@ -46,7 +46,6 @@ const useAuth = () => {
           type: ERROR_TYPES.login,
           message: error.message
         }
-        console.log(error.message, 'THE ERROR MESSAGE IN CHECK ERROR WEB3 STATUS')
         return true
       }
       return false
