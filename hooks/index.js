@@ -42,11 +42,11 @@ export const useCommunities = () => {
  * @returns {Object} a community
  */
 export const useCommunity = () => {
-  const JAMM_ID = '8vhfYMA19OnOjKq1l_zDd7sn2dmOAUL1xEbDhfgCcSo'
+  const JAMM_SLUG = 'jammsession'
 
   const GET_COMMUNITY = gql`
-    query community($txIds: [String]) {
-      community(txIds: $txIds) {
+    query community($slug: String) {
+      community(slug: $slug) {
         id
         name
         txId
@@ -66,7 +66,7 @@ export const useCommunity = () => {
     GET_COMMUNITY,
     {
       variables: {
-        txIds: [JAMM_ID]
+        slug: JAMM_SLUG
       }
     })
   useErrorReporting(ERROR_TYPES.query, error, 'GET_COMMUNITY')
