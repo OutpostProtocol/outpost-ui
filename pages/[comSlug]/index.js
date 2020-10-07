@@ -79,6 +79,8 @@ export async function getServerSideProps (context) {
     }
   })
 
+  if (res.data.data.community.length === 0) return
+
   const community = res.data.data.community[0]
 
   return {
