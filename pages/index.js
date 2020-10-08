@@ -121,7 +121,7 @@ const Home = ({ communities }) => {
 export async function getStaticProps () {
   const query = `
     query {
-      community {
+      allCommunities {
         id
         name
         txId
@@ -139,7 +139,7 @@ export async function getStaticProps () {
 
   const res = await axios.post(OUTPOST_API, { query })
 
-  const communities = res.data.data.community
+  const communities = res.data.data.allCommunities
 
   return {
     props: {
