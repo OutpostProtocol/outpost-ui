@@ -13,7 +13,7 @@ const Container = styled('div')({
 })
 
 const Body = styled('div')({
-  margin: '15vh'
+  margin: '10vh'
 })
 
 const HeaderContainer = styled('div')({
