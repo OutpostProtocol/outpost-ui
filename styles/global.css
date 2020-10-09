@@ -57,8 +57,16 @@ div.sc-fzoyAV {
   Styling for html of a blog post
 */
 
-#blog-text > p, #blog-text > ol, #blog-text > ul  {
+#blog-text > p, #blog-text > ol, #blog-text > ul, #blog-text > blockquote  {
   font-family: 'Spectral', 'serif';
+}
+
+#blog-text > img {
+  max-width: '100%'
+}
+
+#blog-text > p {
+  margin-top: 0.86em
 }
 
 /*
@@ -116,4 +124,28 @@ img.tweet-user-avatar {
 .youtube-wrap > iframe {
     width: 100%;
     height: 100%;
+}
+
+/* Quill editor */
+.ql-editor > p, .ql-editor > ul, .ql-editor > ol, .ql-editor > blockquote, .ql-editor.ql-blank::before {
+  font-family: 'Spectral', 'serif';
+  font-size: 18px;
+}
+
+.ql-editor > p,.ql-editor.ql-blank::before {
+  margin-top: 0.86em
+}
+
+.ql-editor > img {
+  max-width: '100%'
+}
+
+.ql-editor {
+  white-space: pre-wrap !important;
+}
+
+.ql-video {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }

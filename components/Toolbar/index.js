@@ -31,14 +31,14 @@ const Toolbar = () => {
   const { active, account } = useWeb3React()
 
   const handleOpenEditor = () => {
-    router.push('/editor')
+    router.push(`/${router.query.comSlug}/editor`)
   }
 
   return (
     <CommonToolbar>
       {active &&
         <ImgContainer>
-          {false && // disable until we have check that they are an editor
+          {true && // disable until we have check that they are an editor
             <CreateButton
               onClick={handleOpenEditor}
             >

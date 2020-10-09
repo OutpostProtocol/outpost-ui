@@ -17,6 +17,7 @@ import { AuthProvider } from '../context/Auth'
 import { MixpanelProvider } from '../context/Mixpanel'
 
 import '../styles/global.css'
+import 'react-quill/dist/quill.bubble.css'
 
 const httpLink = new HttpLink({
   uri: process.env.NEXT_PUBLIC_OUTPOST_API,
