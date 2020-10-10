@@ -128,7 +128,12 @@ export const useOnePost = (txId, userToken) => {
       txId,
       userToken
     },
-    fetchPolicy: 'network-only'
+    fetchPolicy: 'network-only',
+    context: {
+      headers: {
+        authorization: userToken
+      }
+    }
   })
 
   useEffect(() => {
