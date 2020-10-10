@@ -140,9 +140,7 @@ const Quill = dynamic(
 // Modules object for setting up the Quill editor
 export const modules = {
   toolbar: {
-    container: '#toolbar',
-    handlers: {
-    }
+    container: '#toolbar'
   },
   history: {
     delay: 500,

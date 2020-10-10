@@ -20,10 +20,15 @@ import {
   ERROR_TYPES
 } from '../../constants'
 import PostActions from '../../components/Editor/PostActions'
-import ContentEditor from '../../components/Editor/ContentEditor'
+import dynamic from 'next/dynamic'
+// import ContentEditor from '../../components/Editor/ContentEditor'
 import EditorPreview from '../../components/Editor/EditorPreview'
 import CanonicalLinkOption from '../../components/Editor/CanonicalLinkOption'
 import { useErrorReporting } from '../../hooks'
+
+const ContentEditor = dynamic(
+  import('../../components/Editor/ContentEditor'), { ssr: false, loading: () => <p>Loading ...</p> }
+)
 
 const converter = new showdown.Converter()
 

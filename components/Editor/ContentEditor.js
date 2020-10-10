@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, forwardRef } from 'react'
 import { styled } from '@material-ui/core/styles'
 import dynamic from 'next/dynamic'
 import { Input } from '@material-ui/core'
@@ -8,18 +8,11 @@ import {
   useMutation
 } from '@apollo/client'
 import { PLACEHOLDER_FT_IMG } from '../../constants'
-// import {
-//   modules,
-//   formats
-// } from './EditorToolbar'
+import EditorToolbar from './EditorToolbar'
 
-const EditorToolbar = dynamic(
-  import('./EditorToolbar'), { ssr: false, loading: () => <p>Loading ...</p> }
+const modules = dynamic(
+  import('./EditorToolbar').then((mod) => mod.modules), { ssr: false, loading: () => <p>Loading ...</p>}
 )
-
-// const modules = dynamic(
-//   import('./EditorToolbar').then((mod) => mod.modules), { ssr: false, loading: () => <p>Loading ...</p>}
-// )
 
 const formats = dynamic(
   import('./EditorToolbar').then((mod) => mod.formats), { ssr: false, loading: () => <p>Loading ...</p>}
@@ -28,6 +21,9 @@ const formats = dynamic(
 const ReactQuill = dynamic(
   import('react-quill'), { ssr: false, loading: () => <p>Loading ...</p> }
 )
+const ReactQuillRef = forwardRef((props, ref) => (
+  <ReactQuill {...props} forwardedRef={ref} />
+))
 
 const FormTextField = styled(Input)({
   width: '100%',
@@ -54,7 +50,7 @@ const PostContent = styled('div')({
   'margin-top': '15px'
 })
 
-const Editor = styled(ReactQuill)({
+const Editor = styled(ReactQuillRef)({
   'margin-left': '-12px',
   'margin-right': '-12px'
 })
@@ -99,6 +95,7 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
   const { account } = useWeb3React()
   const editorRef = useRef(undefined)
   const [uploadImageToAR] = useMutation(UPLOAD_IMAGE)
+  console.log('editorRef', editorRef)
 
   if (editorRef.current?.getEditor && !window.editor) {
     window.editor = editorRef.current.getEditor()
@@ -244,7 +241,9 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
           ref={editorRef}
           value={postText}
           onChange={handleEditorChange}
-          // modules={modules}
+          modules={{
+            toolbar: '#toolbar'
+          }}
           formats={formats}
         />
       </PostContent>
