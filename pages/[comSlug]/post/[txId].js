@@ -232,8 +232,7 @@ export async function getServerSideProps (context) {
     }
   })
 
-  const { postPreview } = res.data.data
-  const community = res.data.data.community[0]
+  const { postPreview, community } = res.data.data
 
   return {
     props: {
