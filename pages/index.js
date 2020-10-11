@@ -164,7 +164,9 @@ export async function getStaticProps () {
   return {
     props: {
       communities
-    }
+    },
+    // keeps community data up to date
+    revalidate: 1
   }
 }
 
