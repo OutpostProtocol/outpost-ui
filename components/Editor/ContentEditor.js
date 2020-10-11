@@ -1,13 +1,17 @@
-import React, { useRef } from 'react'
+import React, { 
+  useRef,
+  useState
+} from 'react'
 import { styled } from '@material-ui/core/styles'
 import ReactQuill from 'react-quill'
 import { Input } from '@material-ui/core'
-
 import { useWeb3React } from '@web3-react/core'
 import {
   gql,
   useMutation
 } from '@apollo/client'
+
+import LoadingBackdrop from '../LoadingBackdrop'
 import EditorToolbar, {
   modules,
   formats
@@ -63,9 +67,8 @@ const FeaturedImage = styled('img')({
   height: 'auto',
   maxHeight: '200px',
   marginTop: '10px',
-  'object-fit': 'cover',
+  'object-fit': 'contain',
   '&:hover': {
-    'background-color': '#000',
     opacity: 0.7
   }
 })
@@ -82,6 +85,9 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
   const { account } = useWeb3React()
   const editorRef = useRef(undefined)
   const [uploadImageToAR] = useMutation(UPLOAD_IMAGE)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const loadingImgSrc = 'editor/loading.gif'
 
   if (editorRef.current?.getEditor && !window.editor) {
     window.editor = editorRef.current.getEditor()
@@ -129,6 +135,7 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
     return new Promise((resolve, reject) => {
       input.onchange = async () => {
         const file = input.files[0]
+        if (isFeaturedImage) setFeaturedImage(loadingImgSrc)
         const imgSrc = await imageUpload(file)
         if (isFeaturedImage) {
           setFeaturedImage(imgSrc)
@@ -169,6 +176,7 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
         window.editor.insertText(index + 1, '\u00a0', 'Silent')
         return
       }
+
       // auto replace youtube
       matches = editor.getText().match(/(http:|https:)?(\/\/)?(www\.)?(youtube.com|youtu.be)\/(watch|embed)?(\?v=|\/)?(\S+)?/)
       if (matches != null && window.editor) {
@@ -186,9 +194,11 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
   }
 
   modules.toolbar.handlers.image = async () => {
-    const imgSrc = await handleImage(false)
-    restoreFocus()
     const range = window.editor.getSelection(true)
+    setIsLoading(true)
+    const imgSrc = await handleImage(false)
+    setIsLoading(false)
+    restoreFocus()
     window.editor.insertEmbed(range?.index || 0, 'image', imgSrc)
   }
 
@@ -201,6 +211,7 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
 
   return (
     <>
+      <LoadingBackdrop isLoading={isLoading} />
       <TitleContainer>
         { isEditing &&
           <h3>

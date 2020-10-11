@@ -125,7 +125,8 @@ const EditorPage = () => {
     }
 
     const res = await uploadPostToDb(options)
-    router.push(`/post/${res.data.uploadPost.txId}`)
+    const url = `/${router.query.comSlug}/post/${res.data.uploadPost.txId}`
+    router.push(url)
   }
 
   const isValidPost = () => {
