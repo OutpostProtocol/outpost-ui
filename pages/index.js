@@ -13,7 +13,10 @@ const Container = styled('div')({
 })
 
 const Body = styled('div')({
-  margin: '10vh'
+  margin: '10vh',
+  '@media only screen and (max-width: 800px)': {
+    margin: '10vh 10px'
+  }
 })
 
 const HeaderContainer = styled('div')({
@@ -48,6 +51,9 @@ const ComContainer = styled('div')({
   '&:hover': {
     'background-color': '#fafafa',
     cursor: 'pointer'
+  },
+  '@media only screen and (max-width: 800px)': {
+    'flex-direction': 'column'
   }
 })
 
@@ -61,7 +67,11 @@ const ComInfo = styled('div')({
   'margin-left': '20px',
   display: 'flex',
   'flex-direction': 'column',
-  'justify-content': 'space-around'
+  'justify-content': 'space-around',
+  '@media only screen and (max-width: 800px)': {
+    'margin-left': 0,
+    'margin-top': '10px'
+  }
 })
 
 const ComName = styled('div')({
@@ -97,7 +107,9 @@ const Home = ({ communities }) => {
                 key={i}
                 onClick={() => router.push(`/${com.slug}`)}
               >
-                <ComImg src={`https://arweave.net/${com.imageTxId}`} />
+                <div>
+                  <ComImg src={`https://arweave.net/${com.imageTxId}`} />
+                </div>
                 <ComInfo>
                   <ComName>
                     {com.name}

@@ -17,7 +17,8 @@ const FeedContainer = styled('div')({
   },
   width: '95vw',
   margin: '0 auto 15vh',
-  'padding-top': '5vh'
+  'padding-top': '5vh',
+  'max-width': '1000px'
 })
 
 const FeedHeader = styled('div')({
