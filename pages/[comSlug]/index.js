@@ -1,6 +1,7 @@
 import React from 'react'
 import { styled } from '@material-ui/core/styles'
 import axios from 'axios'
+import Error from 'next/error'
 
 import { CommunityProvider } from '../../context/Community'
 import SEO from '../../components/seo'
@@ -16,7 +17,8 @@ const FeedContainer = styled('div')({
   },
   width: '95vw',
   margin: '0 auto 15vh',
-  'padding-top': '5vh'
+  'padding-top': '5vh',
+  'max-width': '1000px'
 })
 
 const FeedHeader = styled('div')({
@@ -29,6 +31,10 @@ const Container = styled('div')({
 })
 
 const CommunityPage = ({ community }) => {
+  if (!community) {
+    return <Error statusCode={404} />
+  }
+
   return (
     <Container>
       <CommunityProvider
@@ -79,9 +85,13 @@ export async function getServerSideProps (context) {
     }
   })
 
-  if (res.data.data.community.length === 0) return
+  if (!res.data.data.community) {
+    return {
+      props: {}
+    }
+  }
 
-  const community = res.data.data.community[0]
+  const community = res.data.data.community
 
   return {
     props: {

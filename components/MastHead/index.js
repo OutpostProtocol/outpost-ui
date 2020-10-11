@@ -12,7 +12,8 @@ const Container = styled('div')({
   'min-height': '220px',
   '@media only screen and (max-width: 800px)': {
     width: '100%'
-  }
+  },
+  'max-width': '1000px'
 })
 
 const PaddingContainer = styled('div')({

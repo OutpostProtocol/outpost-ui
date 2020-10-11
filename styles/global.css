@@ -33,6 +33,10 @@ a {
   color: black;
 }
 
+hr {
+  border-style: ridge;
+}
+
 div.sc-fzoyAV {
   background: #FFFFFE;
 }

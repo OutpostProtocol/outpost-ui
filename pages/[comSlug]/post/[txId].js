@@ -105,7 +105,7 @@ const PostPage = ({ postPreview, community }) => {
 }
 
 const PostLayout = ({ children, context, community }) => {
-  const { title, subtitle, featuredImage } = context || {}
+  const { title, subtitle, featuredImg } = context || {}
 
   return (
     <CommunityProvider
@@ -114,7 +114,7 @@ const PostLayout = ({ children, context, community }) => {
       <SEO
         title={title}
         description={subtitle}
-        image={featuredImage}
+        image={featuredImg}
       />
       <Toolbar />
       <>
@@ -232,8 +232,7 @@ export async function getServerSideProps (context) {
     }
   })
 
-  const { postPreview } = res.data.data
-  const community = res.data.data.community[0]
+  const { postPreview, community } = res.data.data
 
   return {
     props: {

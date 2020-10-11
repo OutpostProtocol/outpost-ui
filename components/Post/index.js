@@ -165,11 +165,13 @@ const Post = ({ post, comments }) => {
         }
       </PostContent>
       <StyledHr />
-      <Comments
-        comments={comments}
-        communityTxId={community.txId}
-        postTxId={txId}
-      />
+      {false &&
+        <Comments
+          comments={comments}
+          communityTxId={community.txId}
+          postTxId={txId}
+        />
+      }
     </PostContainer>
   )
 }
