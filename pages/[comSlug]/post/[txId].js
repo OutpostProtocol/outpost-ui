@@ -105,6 +105,7 @@ const PostPage = ({ postPreview, community }) => {
 }
 
 const PostLayout = ({ children, context, community }) => {
+  const router = useRouter()
   const { title, subtitle, featuredImg } = context || {}
 
   return (
@@ -116,7 +117,9 @@ const PostLayout = ({ children, context, community }) => {
         description={subtitle}
         image={featuredImg}
       />
-      <Toolbar />
+      <Toolbar
+        prevUrl={router.query.comSlug}
+      />
       <>
         {children}
       </>

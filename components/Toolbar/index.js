@@ -26,7 +26,7 @@ const ImgContainer = styled('div')({
   'align-items': 'center'
 })
 
-const Toolbar = () => {
+const Toolbar = ({ prevUrl }) => {
   const router = useRouter()
   const { active, account } = useWeb3React()
 
@@ -35,7 +35,9 @@ const Toolbar = () => {
   }
 
   return (
-    <CommonToolbar>
+    <CommonToolbar
+      prevUrl={prevUrl}
+    >
       {active &&
         <ImgContainer>
           {false && // disable until we have check that they are an editor
@@ -101,9 +103,19 @@ const LeftToolbar = styled('div')({
   display: 'flex'
 })
 
-const CommonToolbar = ({ children }) => {
+const CommonToolbar = ({ children, prevUrl }) => {
   const router = useRouter()
   const community = useCommunity()
+
+  const handleBack = () => {
+    if (window.history > 2) {
+      router.back()
+    } else if (prevUrl) {
+      router.push(`/${prevUrl}`)
+    } else {
+      router.push('/')
+    }
+  }
 
   return (
     <ToolbarContainer>
@@ -113,7 +125,7 @@ const CommonToolbar = ({ children }) => {
             color="inherit"
             aria-label="Go back"
             edge="end"
-            onClick={() => router.back()}
+            onClick={() => handleBack()}
           >
             <ChevronLeft />
           </BackButton>
