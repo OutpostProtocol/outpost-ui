@@ -13,7 +13,6 @@ import { Web3ReactProvider } from '@web3-react/core'
 import { ethers } from 'ethers'
 import fetch from 'isomorphic-fetch'
 import { AuthProvider } from '../context/Auth'
-import { MixpanelProvider } from '../context/Mixpanel'
 import theme from '../styles/theme'
 
 import '../styles/global.css'
@@ -51,18 +50,16 @@ function OutpostApp ({ Component, pageProps }) {
         <ThemeProvider theme={theme}>
           <Web3ReactProvider getLibrary={getLibrary}>
             <AuthProvider >
-              <MixpanelProvider>
-                <main
-                  style={{
-                    height: '100%',
-                    width: '100%',
-                    top: '0',
-                    left: '0'
-                  }}
-                >
-                  <Component {...pageProps} />
-                </main>
-              </MixpanelProvider>
+              <main
+                style={{
+                  height: '100%',
+                  width: '100%',
+                  top: '0',
+                  left: '0'
+                }}
+              >
+                <Component {...pageProps} />
+              </main>
             </AuthProvider>
           </Web3ReactProvider>
         </ThemeProvider>
