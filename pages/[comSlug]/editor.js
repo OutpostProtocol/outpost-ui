@@ -2,8 +2,12 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { styled } from '@material-ui/core/styles'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import { IconButton } from '@material-ui/core'
+import { 
+  IconButton,
+  CircularProgress
+} from '@material-ui/core'
 import { useWeb3React } from '@web3-react/core'
+import { dynamic } from 'next/dynamic'
 import showdown from 'showdown'
 import {
   gql,
@@ -20,10 +24,11 @@ import {
   ERROR_TYPES
 } from '../../constants'
 import PostActions from '../../components/Editor/PostActions'
-import ContentEditor from '../../components/Editor/ContentEditor'
 import EditorPreview from '../../components/Editor/EditorPreview'
 import CanonicalLinkOption from '../../components/Editor/CanonicalLinkOption'
 import { useErrorReporting } from '../../hooks'
+
+const ContentEditor = dynamic(import('../components/Editor/ContentEditor'), { ssr: false, loading: () => <CircularProgress /> })
 
 const converter = new showdown.Converter()
 

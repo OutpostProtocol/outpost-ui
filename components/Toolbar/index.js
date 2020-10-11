@@ -31,7 +31,7 @@ const Toolbar = () => {
   const { active, account } = useWeb3React()
 
   const handleOpenEditor = () => {
-    router.push(`/${router.query.comSlug}/editor`)
+    router.push('/editor')
   }
 
   return (
