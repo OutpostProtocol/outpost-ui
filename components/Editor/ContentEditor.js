@@ -2,6 +2,7 @@ import React, { useRef } from 'react'
 import { styled } from '@material-ui/core/styles'
 import ReactQuill from 'react-quill'
 import { Input } from '@material-ui/core'
+
 import { useWeb3React } from '@web3-react/core'
 import {
   gql,
@@ -125,15 +126,17 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
     input.setAttribute('type', 'file')
     input.setAttribute('accept', 'image/*')
     input.click()
-    input.onchange = async () => {
-      const file = input.files[0]
-      const imgSrc = await imageUpload(file)
-      restoreFocus()
-      const range = window.editor.getSelection(true)
-
-      if (isFeaturedImage) setFeaturedImage(imgSrc)
-      else window.editor.insertEmbed(range?.index || 0, 'image', imgSrc)
-    }
+    return new Promise((resolve, reject) => {
+      input.onchange = async () => {
+        const file = input.files[0]
+        const imgSrc = await imageUpload(file)
+        if (isFeaturedImage) {
+          setFeaturedImage(imgSrc)
+          resolve(undefined)
+        }
+        resolve(imgSrc)
+      }
+    })
   }
 
   const restoreFocus = () => {
@@ -182,7 +185,19 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
     setPostText(value)
   }
 
-  modules.toolbar.handlers.image = () => handleImage(false)
+  modules.toolbar.handlers.image = async () => {
+    const imgSrc = await handleImage(false)
+    restoreFocus()
+    const range = window.editor.getSelection(true)
+    window.editor.insertEmbed(range?.index || 0, 'image', imgSrc)
+  }
+
+  document.querySelectorAll('.ql-picker').forEach(tool => {
+    tool.addEventListener('mousedown', function (event) {
+      event.preventDefault()
+      event.stopPropagation()
+    })
+  })
 
   return (
     <>

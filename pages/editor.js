@@ -2,7 +2,10 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { styled } from '@material-ui/core/styles'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import { IconButton } from '@material-ui/core'
+import {
+  IconButton,
+  CircularProgress
+} from '@material-ui/core'
 import { useWeb3React } from '@web3-react/core'
 import showdown from 'showdown'
 import {
@@ -24,7 +27,7 @@ import PostActions from '../components/Editor/PostActions'
 import EditorPreview from '../components/Editor/EditorPreview'
 import CanonicalLinkOption from '../components/Editor/CanonicalLinkOption'
 
-const ContentEditor = dynamic(import('../components/Editor/ContentEditor'), { ssr: false, loading: () => <p>Loading ...</p> })
+const ContentEditor = dynamic(import('../components/Editor/ContentEditor'), { ssr: false, loading: () => <CircularProgress /> })
 
 const converter = new showdown.Converter()
 
@@ -101,7 +104,7 @@ const EditorPage = () => {
       subtitle: subtitle,
       postText: parsedPost,
       canonicalLink: canonicalLink,
-      parentTxId: postTemplate?.transaction.txId,
+      // parentTxId: postTemplate?.transaction.txId,
       timestamp: timestamp,
       featuredImg: featuredImage
     }

@@ -22,7 +22,7 @@ const Feed = () => {
     )
   }
 
-  const { posts } = data
+  const { posts } = data || []
 
   return (
     <>
