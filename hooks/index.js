@@ -17,11 +17,10 @@ export const useErrorReporting = (type, error, request) => {
 
 export const GET_ALL_COMMUNITIES = gql`
   query {
-    community {
+    allCommunities {
       id
       name
       txId
-      blockHash
     }
   }`
 

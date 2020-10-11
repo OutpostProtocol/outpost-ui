@@ -1,6 +1,9 @@
-import React, { useRef } from 'react'
+import React, { 
+  useRef,
+  useState
+} from 'react'
 import { styled } from '@material-ui/core/styles'
-import dynamic from 'next/dynamic'
+import ReactQuill from 'react-quill'
 import { Input } from '@material-ui/core'
 import { useWeb3React } from '@web3-react/core'
 import {
@@ -13,21 +16,11 @@ import { PLACEHOLDER_FT_IMG } from '../../constants'
 //   formats
 // } from './EditorToolbar'
 
-const EditorToolbar = dynamic(
-  import('./EditorToolbar'), { ssr: false, loading: () => <p>Loading ...</p> }
-)
-
-// const modules = dynamic(
-//   import('./EditorToolbar').then((mod) => mod.modules), { ssr: false, loading: () => <p>Loading ...</p>}
-// )
-
-const formats = dynamic(
-  import('./EditorToolbar').then((mod) => mod.formats), { ssr: false, loading: () => <p>Loading ...</p>}
-)
-
-const ReactQuill = dynamic(
-  import('react-quill'), { ssr: false, loading: () => <p>Loading ...</p> }
-)
+import LoadingBackdrop from '../LoadingBackdrop'
+import EditorToolbar, {
+  modules,
+  formats
+} from './EditorToolbar'
 
 const FormTextField = styled(Input)({
   width: '100%',
@@ -79,10 +72,8 @@ const FeaturedImage = styled('img')({
   height: 'auto',
   maxHeight: '200px',
   marginTop: '10px',
-  'object-fit': 'cover',
-  'background-color': '#c4c4c4',
+  'object-fit': 'contain',
   '&:hover': {
-    'background-color': '#000',
     opacity: 0.7
   }
 })
@@ -99,6 +90,13 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
   const { account } = useWeb3React()
   const editorRef = useRef(undefined)
   const [uploadImageToAR] = useMutation(UPLOAD_IMAGE)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const loadingImgSrc = 'editor/loading.gif'
+
+  if (editorRef.current?.getEditor && !window.editor) {
+    window.editor = editorRef.current.getEditor()
+  }
 
   if (editorRef.current?.getEditor && !window.editor) {
     window.editor = editorRef.current.getEditor()
@@ -143,15 +141,18 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
     input.setAttribute('type', 'file')
     input.setAttribute('accept', 'image/*')
     input.click()
-    input.onchange = async () => {
-      const file = input.files[0]
-      const imgSrc = await imageUpload(file)
-      restoreFocus()
-      const range = window.editor.getSelection(true)
-
-      if (isFeaturedImage) setFeaturedImage(imgSrc)
-      else window.editor.insertEmbed(range?.index || 0, 'image', imgSrc)
-    }
+    return new Promise((resolve, reject) => {
+      input.onchange = async () => {
+        const file = input.files[0]
+        if (isFeaturedImage) setFeaturedImage(loadingImgSrc)
+        const imgSrc = await imageUpload(file)
+        if (isFeaturedImage) {
+          setFeaturedImage(imgSrc)
+          resolve(undefined)
+        }
+        resolve(imgSrc)
+      }
+    })
   }
 
   const restoreFocus = () => {
@@ -200,10 +201,25 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
     setPostText(value)
   }
 
-  // modules.toolbar.handlers.image = () => handleImage(false)
+  modules.toolbar.handlers.image = async () => {
+    const range = window.editor.getSelection(true)
+    setIsLoading(true)
+    const imgSrc = await handleImage(false)
+    setIsLoading(false)
+    restoreFocus()
+    window.editor.insertEmbed(range?.index || 0, 'image', imgSrc)
+  }
+
+  document.querySelectorAll('.ql-picker').forEach(tool => {
+    tool.addEventListener('mousedown', function (event) {
+      event.preventDefault()
+      event.stopPropagation()
+    })
+  })
 
   return (
     <>
+      <LoadingBackdrop isLoading={isLoading} />
       <TitleContainer>
         { isEditing &&
           <h3>
@@ -229,8 +245,8 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
             <FeaturedImage src={featuredImg} alt='Placeholder ft img' />
           ) : (
             <>
-              <FeaturedImage src={PLACEHOLDER_FT_IMG} alt='Placeholder ft img' />
-              <CenteredText>Add a featured image to your post</CenteredText>
+              <FeaturedImage src='/editor/placeholder.png' alt='Placeholder ft img' />
+              <CenteredText>FEATURE AN IMAGE</CenteredText>
             </>
           )
           }
@@ -244,7 +260,7 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
           ref={editorRef}
           value={postText}
           onChange={handleEditorChange}
-          // modules={modules}
+          modules={modules}
           formats={formats}
         />
       </PostContent>
