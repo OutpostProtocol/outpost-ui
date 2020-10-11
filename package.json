@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && next start",
     "start": "next start",
     "lint": "yarn eslint components connectors constants context hooks pages utils",
     "lint-fix": "yarn lint --fix"
