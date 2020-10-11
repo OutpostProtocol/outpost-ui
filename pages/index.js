@@ -53,7 +53,15 @@ const ComContainer = styled('div')({
     cursor: 'pointer'
   },
   '@media only screen and (max-width: 800px)': {
-    'flex-direction': 'column'
+    'flex-direction': 'column',
+    padding: '20px'
+  }
+})
+
+const ComImgContainer = styled('div')({
+  '@media only screen and (max-width: 800px)': {
+    display: 'flex',
+    'justify-content': 'center'
   }
 })
 
@@ -107,9 +115,9 @@ const Home = ({ communities }) => {
                 key={i}
                 onClick={() => router.push(`/${com.slug}`)}
               >
-                <div>
+                <ComImgContainer>
                   <ComImg src={`https://arweave.net/${com.imageTxId}`} />
-                </div>
+                </ComImgContainer>
                 <ComInfo>
                   <ComName>
                     {com.name}
