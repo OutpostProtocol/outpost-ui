@@ -4,6 +4,7 @@ import { styled } from '@material-ui/core/styles'
 import { IconButton } from '@material-ui/core'
 import { CreateOutlined, ChevronLeft } from '@material-ui/icons'
 import { useCommunity } from '../../context/Community'
+import { useAccountRoles } from '../../context/Role'
 import { useWeb3React } from '@web3-react/core'
 import { useRouter } from 'next/router'
 
@@ -29,6 +30,7 @@ const ImgContainer = styled('div')({
 const Toolbar = ({ prevUrl }) => {
   const router = useRouter()
   const { active, account } = useWeb3React()
+  const roles = useAccountRoles()
 
   const handleOpenEditor = () => {
     router.push('/editor')
@@ -40,7 +42,7 @@ const Toolbar = ({ prevUrl }) => {
     >
       {active &&
         <ImgContainer>
-          {false && // disable until we have check that they are an editor
+          {roles.length > 0 &&
             <CreateButton
               onClick={handleOpenEditor}
             >

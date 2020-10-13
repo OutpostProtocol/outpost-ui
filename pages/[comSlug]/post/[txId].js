@@ -155,7 +155,7 @@ const LoggedInPost = ({ backPath, txId }) => {
 
   const { userBalance, readRequirement, tokenSymbol, tokenAddress } = postData
 
-  const hasInsufficientBalance = userBalance < readRequirement
+  const hasInsufficientBalance = readRequirement && userBalance < readRequirement
   if (hasInsufficientBalance) {
     return (
       <IframeContainer>
