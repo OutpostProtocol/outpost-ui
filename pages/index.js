@@ -38,10 +38,17 @@ const OutpostTitle = styled('div')({
   'font-size': '2em'
 })
 
-const Discover = styled('div')({
+const DiscoverContainer = styled('div')({
   display: 'flex',
   'justify-content': 'center',
   'margin-top': '40px'
+})
+
+const Discover = styled('div')({
+  '@media only screen and (min-width: 1400px)': {
+    display: 'grid',
+    'grid-template-columns': '1fr 1fr'
+  }
 })
 
 const ComContainer = styled('div')({
@@ -108,7 +115,8 @@ const Home = ({ communities }) => {
             </OutpostTitle>
           </Header>
         </HeaderContainer>
-        <Discover>
+        <DiscoverContainer>
+          <Discover>
           {communities.map((com, i) => {
             return (
               <ComContainer
@@ -125,14 +133,17 @@ const Home = ({ communities }) => {
                   <ComDescription>
                     {com.description}
                   </ComDescription>
-                  <ComAuthor>
-                    By {com.owner.name}
-                  </ComAuthor>
+                  {com.owner.name &&
+                    <ComAuthor>
+                      By {com.owner.name}
+                    </ComAuthor>
+                  }
                 </ComInfo>
               </ComContainer>
             )
           })}
-        </Discover>
+          </Discover>
+        </DiscoverContainer>
       </Body>
     </Container>
   )
