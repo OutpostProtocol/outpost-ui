@@ -26,7 +26,7 @@ const ImgContainer = styled('div')({
   'align-items': 'center'
 })
 
-const Toolbar = ({ disableEditor }) => {
+const Toolbar = () => {
   const router = useRouter()
   const { active, account } = useWeb3React()
 
@@ -38,7 +38,7 @@ const Toolbar = ({ disableEditor }) => {
     <CommonToolbar>
       {active &&
         <ImgContainer>
-          {(true || disableEditor) && // disable until we have check that they are an editor
+          { false && // disable until we have check that they are an editor
             <CreateButton
               onClick={handleOpenEditor}
             >

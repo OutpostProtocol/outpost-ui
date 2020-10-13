@@ -76,10 +76,12 @@ const EditorPage = () => {
   const [showPreview, setShowPreview] = useState(false)
   const [hasCanonicalLink, setHasLink] = useState(false)
   const [canonicalLink, setCanonicalLink] = useState('')
+  const [slug, setSlug] = useState('')
   const [uploadPostToDb, { error }] = useMutation(UPLOAD_POST)
 
   const handleCommunitySelection = (event) => {
-    if (event && event.target.value) {
+    if (event?.target?.value) {
+      setSlug(event.target.value.slug)
       setCommunityId(event.target.value.txId)
     }
   }
@@ -115,7 +117,8 @@ const EditorPage = () => {
     }
 
     const res = await uploadPostToDb(options)
-    router.push('/')
+    if (slug && res?.data?.uploadPost?.txId) router.push(`/${slug}/post/${res.data.uploadPost.txId}`)
+    else router.push('/')
   }
 
   const isValidPost = () => {
@@ -141,9 +144,7 @@ const EditorPage = () => {
 
   return (
     <>
-      <Toolbar
-        disableEditor={true}
-      />
+      <Toolbar />
       <SEO
         title="Post Editor"
       />

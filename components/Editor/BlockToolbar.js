@@ -88,7 +88,6 @@ const BlockToolbar = ({ handleImage, location }) => {
     setURL('')
     setIsURLOpen(false)
     setIsOpen(false)
-    if (window.editor) window.editor.focus()
   }
 
   const isVisible = () => {
@@ -102,20 +101,18 @@ const BlockToolbar = ({ handleImage, location }) => {
   }
 
   const getIndex = () => {
-    const range = window?.editor.getSelection()
+    const range = window?.editor.getSelection(true)
     return range?.index || 0
   }
 
   const handleTwitter = (url) => {
     if (window.editor) {
-      window.editor.focus()
       window.editor.insertEmbed(getIndex(), 'twitter', { url }, 'Silent')
     }
   }
 
   const handleYoutube = (url) => {
     if (window.editor) {
-      window.editor.focus()
       const sanitizedURL = sanitizeYoutubeLink(url)
       if (sanitizedURL !== undefined) {
         window.editor.insertEmbed(getIndex(), 'video', sanitizedURL, 'Silent')
