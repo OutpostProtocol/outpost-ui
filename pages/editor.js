@@ -1,11 +1,6 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { styled } from '@material-ui/core/styles'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import {
-  IconButton,
-  CircularProgress
-} from '@material-ui/core'
 import { useWeb3React } from '@web3-react/core'
 import showdown from 'showdown'
 import {
@@ -14,6 +9,7 @@ import {
 } from '@apollo/client'
 import dynamic from 'next/dynamic'
 
+import Toolbar from '../components/Toolbar'
 import { GET_POSTS } from '../hooks/usePosts'
 import { isValidURL } from '../utils'
 import LoadingBackdrop from '../components/LoadingBackdrop'
@@ -27,19 +23,13 @@ import PostActions from '../components/Editor/PostActions'
 import EditorPreview from '../components/Editor/EditorPreview'
 import CanonicalLinkOption from '../components/Editor/CanonicalLinkOption'
 
-const ContentEditor = dynamic(import('../components/Editor/ContentEditor'), { ssr: false, loading: () => <CircularProgress /> })
+const ContentEditor = dynamic(import('../components/Editor/ContentEditor'), { ssr: false, loading: () => <LoadingBackdrop isLoading={true} /> })
 
 const converter = new showdown.Converter()
 
 const EditorContainer = styled('div')({
   width: '50vw',
   margin: '0 auto 10vh'
-})
-
-const BackButton = styled(IconButton)({
-  margin: '5px',
-  position: 'absolute',
-  'z-index': 2
 })
 
 const PreviewContainer = styled('div')({
@@ -125,9 +115,6 @@ const EditorPage = () => {
     }
 
     const res = await uploadPostToDb(options)
-    // const com = router.query.comSlug
-    // const url = `/${com}/post/${res.data.uploadPost.txId}`
-    // router.push(url)
     router.push('/')
   }
 
@@ -154,18 +141,13 @@ const EditorPage = () => {
 
   return (
     <>
+      <Toolbar
+        disableEditor={true}
+      />
       <SEO
         title="Post Editor"
       />
       <LoadingBackdrop isLoading={isWaitingForUpload} />
-      <BackButton
-        color="inherit"
-        aria-label="Go back"
-        edge="end"
-        onClick={() => router.push('/')}
-      >
-        <ChevronLeftIcon />
-      </BackButton>
       <EditorContainer>
         {showPreview
           ? <EditorPreview

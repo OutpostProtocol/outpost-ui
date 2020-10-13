@@ -1,4 +1,4 @@
-import React, { 
+import React, {
   useRef,
   useState
 } from 'react'
@@ -10,17 +10,19 @@ import {
   gql,
   useMutation
 } from '@apollo/client'
-import { PLACEHOLDER_FT_IMG } from '../../constants'
-// import {
-//   modules,
-//   formats
-// } from './EditorToolbar'
 
 import LoadingBackdrop from '../LoadingBackdrop'
-import EditorToolbar, {
+import FormattingToolbar, {
   modules,
   formats
-} from './EditorToolbar'
+} from './FormattingToolbar'
+import BlockToolbar from './BlockToolbar'
+import {
+  registerCustomBlocks,
+  sanitizeYoutubeLink
+} from './CustomBlocks'
+
+registerCustomBlocks()
 
 const FormTextField = styled(Input)({
   width: '100%',
@@ -41,10 +43,6 @@ const SubtitleField = styled(FormTextField)({
 const TitleContainer = styled('div')({
   padding: '7vh 0 0 0',
   'text-align': 'center'
-})
-
-const PostContent = styled('div')({
-  'margin-top': '15px'
 })
 
 const Editor = styled(ReactQuill)({
@@ -72,10 +70,15 @@ const FeaturedImage = styled('img')({
   height: 'auto',
   maxHeight: '200px',
   marginTop: '10px',
-  'object-fit': 'contain',
+  'object-fit': 'cover',
   '&:hover': {
     opacity: 0.7
   }
+})
+
+const EditorContainer = styled(Editor)({
+  position: 'relative',
+  top: '-50px'
 })
 
 const UPLOAD_IMAGE = gql`
@@ -91,15 +94,24 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
   const editorRef = useRef(undefined)
   const [uploadImageToAR] = useMutation(UPLOAD_IMAGE)
   const [isLoading, setIsLoading] = useState(false)
-
+  const [blockToolbarLocation, setBlockToolbarLocation] = useState({ top: 0, left: 0 })
   const loadingImgSrc = 'editor/loading.gif'
+
+  document.querySelectorAll('.ql-picker').forEach(tool => {
+    tool.addEventListener('mousedown', function (event) {
+      event.preventDefault()
+      event.stopPropagation()
+    })
+  })
 
   if (editorRef.current?.getEditor && !window.editor) {
     window.editor = editorRef.current.getEditor()
   }
 
-  if (editorRef.current?.getEditor && !window.editor) {
-    window.editor = editorRef.current.getEditor()
+  if (window.editor) {
+    const tooltip = window.editor.theme.tooltip
+    const input = tooltip.root.querySelector('input[data-link]')
+    input.dataset.link = 'https://www.outpost-protocol.com'
   }
 
   const getBase64 = (file) => {
@@ -163,15 +175,6 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
     }
   }
 
-  const getYoutubeId = (url) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
-    const match = url.match(regExp)
-
-    return (match && match[2].length === 11)
-      ? match[2]
-      : null
-  }
-
   const handleEditorChange = async (value, delta, source, editor) => {
     if (source === 'user' && window.editor) {
       restoreFocus()
@@ -190,15 +193,24 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
       if (matches != null && window.editor) {
         const range = window.editor.getSelection()
         const index = range?.index || 0
-        window.editor.deleteText(index, matches[0].length)
-        const id = getYoutubeId(matches[0])
-        if (!id) return
-        const url = 'https://www.youtube.com/embed/' + id
-        window.editor.insertEmbed(index, 'video', url, 'Silent')
+        const url = sanitizeYoutubeLink(matches[0])
+        if (url !== undefined) {
+          window.editor.deleteText(index, matches[0].length)
+          window.editor.insertEmbed(index, 'video', url, 'Silent')
+        }
         return
       }
     }
     setPostText(value)
+  }
+
+  const handleSelectionChange = (range, source, editor) => {
+    if (!window.editor || window.editor.hasFocus()) {
+      const bounds = editor.getBounds(range?.index)
+      bounds.left = -60 // keep toolbar positioned to left of editor
+      bounds.top = bounds.top - 13
+      setBlockToolbarLocation(bounds)
+    }
   }
 
   modules.toolbar.handlers.image = async () => {
@@ -209,13 +221,6 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
     restoreFocus()
     window.editor.insertEmbed(range?.index || 0, 'image', imgSrc)
   }
-
-  document.querySelectorAll('.ql-picker').forEach(tool => {
-    tool.addEventListener('mousedown', function (event) {
-      event.preventDefault()
-      event.stopPropagation()
-    })
-  })
 
   return (
     <>
@@ -252,18 +257,24 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
           }
         </ImageContainer>
       </TitleContainer>
-      <PostContent>
-        <EditorToolbar />
-        <Editor
-          placeholder="Begin writing your post"
+      <div>
+        <FormattingToolbar />
+        <BlockToolbar
+          handleImage={() => handleImage(false)}
+          location={blockToolbarLocation}
+        />
+        <EditorContainer
+          id='editor-container'
+          placeholder='Begin writing your post'
           theme='bubble'
           ref={editorRef}
           value={postText}
           onChange={handleEditorChange}
+          onChangeSelection={handleSelectionChange}
           modules={modules}
           formats={formats}
         />
-      </PostContent>
+      </div>
     </>
   )
 }
