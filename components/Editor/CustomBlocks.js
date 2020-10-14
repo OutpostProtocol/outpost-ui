@@ -51,12 +51,12 @@ export const registerCustomBlocks = () => {
           if (!window.twttr) {
             loadScript('//platform.twitter.com/widgets.js').then(() => {
               setTimeout(() => {
-                window.twttr.widgets.load(document.getElementById('editor-container'))
+                window.twttr.widgets.load()
               }, 100)
             })
           } else {
             setTimeout(() => {
-              window.twttr.widgets.load(document.getElementById('editor-container'))
+              window.twttr.widgets.load()
             }, 100)
           }
         }

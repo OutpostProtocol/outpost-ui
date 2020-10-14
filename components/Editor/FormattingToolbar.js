@@ -41,6 +41,11 @@ Quill.register(FontStyle, true)
 const SizeStyle = Quill.import('attributors/style/size')
 Quill.register(SizeStyle, true)
 
+// Custom matchers for clipboard
+const ignoreEmptyParagraphs = (node, delta) => {
+  return { ops: [] }
+}
+
 // Modules object for setting up the Quill editor
 export const modules = {
   toolbar: {
@@ -52,6 +57,12 @@ export const modules = {
     delay: 500,
     maxStack: 100,
     userOnly: true
+  },
+  clipboard: {
+    matchVisual: false,
+    matchers: [
+      ['br', ignoreEmptyParagraphs]
+    ]
   }
 }
 
