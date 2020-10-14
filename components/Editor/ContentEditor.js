@@ -1,26 +1,30 @@
-import React, { 
+import React, {
   useRef,
   useState
 } from 'react'
 import { styled } from '@material-ui/core/styles'
 import ReactQuill from 'react-quill'
-import { Input } from '@material-ui/core'
+import {
+  Input,
+  CircularProgress
+} from '@material-ui/core'
 import { useWeb3React } from '@web3-react/core'
 import {
   gql,
   useMutation
 } from '@apollo/client'
-import { PLACEHOLDER_FT_IMG } from '../../constants'
-// import {
-//   modules,
-//   formats
-// } from './EditorToolbar'
 
-import LoadingBackdrop from '../LoadingBackdrop'
-import EditorToolbar, {
+import BlockToolbar from './BlockToolbar'
+import FormattingToolbar, {
   modules,
   formats
-} from './EditorToolbar'
+} from './FormattingToolbar'
+import {
+  registerCustomBlocks,
+  sanitizeYoutubeLink
+} from './CustomBlocks'
+
+registerCustomBlocks()
 
 const FormTextField = styled(Input)({
   width: '100%',
@@ -41,10 +45,6 @@ const SubtitleField = styled(FormTextField)({
 const TitleContainer = styled('div')({
   padding: '7vh 0 0 0',
   'text-align': 'center'
-})
-
-const PostContent = styled('div')({
-  'margin-top': '15px'
 })
 
 const Editor = styled(ReactQuill)({
@@ -72,10 +72,15 @@ const FeaturedImage = styled('img')({
   height: 'auto',
   maxHeight: '200px',
   marginTop: '10px',
-  'object-fit': 'contain',
+  'object-fit': 'cover',
   '&:hover': {
     opacity: 0.7
   }
+})
+
+const EditorContainer = styled(Editor)({
+  position: 'relative',
+  top: '-50px'
 })
 
 const UPLOAD_IMAGE = gql`
@@ -90,16 +95,18 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
   const { account } = useWeb3React()
   const editorRef = useRef(undefined)
   const [uploadImageToAR] = useMutation(UPLOAD_IMAGE)
-  const [isLoading, setIsLoading] = useState(false)
-
-  const loadingImgSrc = 'editor/loading.gif'
+  const [blockToolbarLocation, setBlockToolbarLocation] = useState({ top: 0, left: 0 })
+  const [isFeaturedImageLoading, setIsFeaturedImageLoading] = useState(false)
+  const loadingImg = '/editor/loading.gif'
 
   if (editorRef.current?.getEditor && !window.editor) {
     window.editor = editorRef.current.getEditor()
   }
 
-  if (editorRef.current?.getEditor && !window.editor) {
-    window.editor = editorRef.current.getEditor()
+  if (window.editor) {
+    const tooltip = window.editor.theme.tooltip
+    const input = tooltip.root.querySelector('input[data-link]')
+    input.dataset.link = 'https://www.outpost-protocol.com'
   }
 
   const getBase64 = (file) => {
@@ -144,82 +151,69 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
     return new Promise((resolve, reject) => {
       input.onchange = async () => {
         const file = input.files[0]
-        if (isFeaturedImage) setFeaturedImage(loadingImgSrc)
+        const index = window.editor.getSelection(true).index
+        if (isFeaturedImage) setIsFeaturedImageLoading(true)
+        else {
+          window.editor.insertEmbed(index, 'image', loadingImg)
+        }
         const imgSrc = await imageUpload(file)
         if (isFeaturedImage) {
+          setIsFeaturedImageLoading(false)
           setFeaturedImage(imgSrc)
           resolve(undefined)
+        } else {
+          window.editor.deleteText(index, 3)
+          resolve(imgSrc)
         }
-        resolve(imgSrc)
       }
     })
   }
 
-  const restoreFocus = () => {
-    window.editor.focus()
-    if (window?.getSelection?.focusNode?.parentElement) {
-      const selectionEl = window.getSelection().focusNode.parentElement
-      selectionEl.scrollIntoView({ block: 'center', inline: 'center' })
-    }
+  const getTweet = (url) => {
+    const matches = url.match(/(^|[^'"])(https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)[?]?(s=\d+)?)/)
+    if (matches) return matches[0]
+    return undefined
   }
 
-  const getYoutubeId = (url) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
-    const match = url.match(regExp)
-
-    return (match && match[2].length === 11)
-      ? match[2]
-      : null
+  const getYoutubeVideo = (url) => {
+    const matches = url.match(/(http:|https:)?(\/\/)?(www\.)?(youtube.com|youtu.be)\/(watch|embed)?(\?v=|\/)?(\S+)?/)
+    if (matches) return sanitizeYoutubeLink(matches[0])
+    return undefined
   }
 
-  const handleEditorChange = async (value, delta, source, editor) => {
-    if (source === 'user' && window.editor) {
-      restoreFocus()
-      // auto replace twitter
-      let matches = editor.getText().match(/(^|[^'"])(https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)[?]?(s=\d+)?)/)
-      if (matches != null && window.editor) {
-        const range = window.editor.getSelection()
-        const index = range?.index || 0
-        window.editor.deleteText(index, matches[0].length)
-        window.editor.insertEmbed(index, 'twitter', { url: matches[0] }, 'Silent')
-        window.editor.insertText(index + 1, '\u00a0', 'Silent')
-        return
-      }
-      // auto replace youtube
-      matches = editor.getText().match(/(http:|https:)?(\/\/)?(www\.)?(youtube.com|youtu.be)\/(watch|embed)?(\?v=|\/)?(\S+)?/)
-      if (matches != null && window.editor) {
-        const range = window.editor.getSelection()
-        const index = range?.index || 0
-        window.editor.deleteText(index, matches[0].length)
-        const id = getYoutubeId(matches[0])
-        if (!id) return
-        const url = 'https://www.youtube.com/embed/' + id
-        window.editor.insertEmbed(index, 'video', url, 'Silent')
-        return
-      }
-    }
-    setPostText(value)
+  const getLineText = (index) => {
+    const [blot] = window.editor.getLine(index)
+    return blot.domNode?.innerText
   }
 
-  modules.toolbar.handlers.image = async () => {
+  const autoEmbed = () => {
     const range = window.editor.getSelection(true)
-    setIsLoading(true)
-    const imgSrc = await handleImage(false)
-    setIsLoading(false)
-    restoreFocus()
-    window.editor.insertEmbed(range?.index || 0, 'image', imgSrc)
+    if (range?.index > 0 && window.editor) {
+      const line = getLineText(range?.index - 1)
+      const youtubeUrl = getYoutubeVideo(line)
+      const twitterUrl = getTweet(line)
+      if (youtubeUrl) window.editor.formatLine(range?.index - 1, 0, 'video', youtubeUrl)
+      else if (twitterUrl) window.editor.formatLine(range?.index - 1, 'twitter', { url: twitterUrl })
+    }
   }
 
-  document.querySelectorAll('.ql-picker').forEach(tool => {
-    tool.addEventListener('mousedown', function (event) {
-      event.preventDefault()
-      event.stopPropagation()
-    })
-  })
+  const handleSelectionChange = (range, source, editor) => {
+    if (window.editor && window.editor.hasFocus() && range.index) {
+      const bounds = editor.getBounds(range?.index)
+      bounds.left = -60 // keep toolbar positioned to left of editor
+      bounds.top = bounds.top - 13
+      setBlockToolbarLocation(bounds)
+    }
+  }
+
+  const uploadImage = async () => {
+    const range = window.editor.getSelection(true)
+    const imgSrc = await handleImage(false)
+    if (imgSrc) window.editor.insertEmbed(range?.index || 0, 'image', imgSrc)
+  }
 
   return (
     <>
-      <LoadingBackdrop isLoading={isLoading} />
       <TitleContainer>
         { isEditing &&
           <h3>
@@ -239,31 +233,51 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
           disableUnderline={true}
         />
         <ImageContainer
-          onClick={() => handleImage(true)}
+          onClick={() => handleImage(true) }
         >
           { featuredImg ? (
-            <FeaturedImage src={featuredImg} alt='Placeholder ft img' />
+            <>
+              <FeaturedImage src={featuredImg} alt='Placeholder ft img' />
+              { isFeaturedImageLoading &&
+                <CenteredText><CircularProgress /></CenteredText>
+              }
+            </>
           ) : (
             <>
               <FeaturedImage src='/editor/placeholder.png' alt='Placeholder ft img' />
-              <CenteredText>FEATURE AN IMAGE</CenteredText>
+              { isFeaturedImageLoading
+                ? <CenteredText><CircularProgress /></CenteredText>
+                : <CenteredText>FEATURE AN IMAGE</CenteredText>
+              }
             </>
           )
           }
         </ImageContainer>
       </TitleContainer>
-      <PostContent>
-        <EditorToolbar />
-        <Editor
-          placeholder="Begin writing your post"
+      <div>
+        <FormattingToolbar />
+        <BlockToolbar
+          handleImage={() => uploadImage()}
+          location={blockToolbarLocation}
+        />
+        <EditorContainer
+          id='editor-container'
+          placeholder='Begin writing your post'
           theme='bubble'
           ref={editorRef}
           value={postText}
-          onChange={handleEditorChange}
+          onChange={(value) => setPostText(value)}
+          onChangeSelection={handleSelectionChange}
+          onKeyUp={(event) => {
+            if (event.key === 'Enter') {
+              autoEmbed()
+            }
+          }}
           modules={modules}
           formats={formats}
+          scrollingContainer='html'
         />
-      </PostContent>
+      </div>
     </>
   )
 }

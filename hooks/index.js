@@ -21,6 +21,7 @@ export const GET_ALL_COMMUNITIES = gql`
       id
       name
       txId
+      slug
     }
   }`
 
