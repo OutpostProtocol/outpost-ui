@@ -111,3 +111,15 @@ export const sanitizeYoutubeLink = (url) => {
   if (!id) return undefined
   return 'https://www.youtube.com/embed/' + id
 }
+
+export const getTweet = (url) => {
+  const matches = url.match(/(^|[^'"])(https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)[?]?(s=\d+)?)/)
+  if (matches) return matches[0]
+  return undefined
+}
+
+export const getYoutubeVideo = (url) => {
+  const matches = url.match(/(http:|https:)?(\/\/)?(www\.)?(youtube.com|youtu.be)\/(watch|embed)?(\?v=|\/)?(\S+)?/)
+  if (matches) return sanitizeYoutubeLink(matches[0])
+  return undefined
+}

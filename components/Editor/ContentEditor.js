@@ -21,7 +21,8 @@ import FormattingToolbar, {
 } from './FormattingToolbar'
 import {
   registerCustomBlocks,
-  sanitizeYoutubeLink
+  getTweet,
+  getYoutubeVideo
 } from './CustomBlocks'
 
 registerCustomBlocks()
@@ -168,18 +169,6 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
         }
       }
     })
-  }
-
-  const getTweet = (url) => {
-    const matches = url.match(/(^|[^'"])(https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)[?]?(s=\d+)?)/)
-    if (matches) return matches[0]
-    return undefined
-  }
-
-  const getYoutubeVideo = (url) => {
-    const matches = url.match(/(http:|https:)?(\/\/)?(www\.)?(youtube.com|youtu.be)\/(watch|embed)?(\?v=|\/)?(\S+)?/)
-    if (matches) return sanitizeYoutubeLink(matches[0])
-    return undefined
   }
 
   const getLineText = (index) => {
