@@ -199,12 +199,10 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
   }
 
   const handleSelectionChange = (range, source, editor) => {
-    if (window.editor && window.editor.hasFocus() && range.index) {
-      const bounds = editor.getBounds(range?.index)
-      bounds.left = -60 // keep toolbar positioned to left of editor
-      bounds.top = bounds.top - 13
-      setBlockToolbarLocation(bounds)
-    }
+    const bounds = editor.getBounds(range?.index || 0)
+    bounds.left = -60 // keep toolbar positioned to left of editor
+    bounds.top = bounds.top - 13
+    setBlockToolbarLocation(bounds)
   }
 
   const uploadImage = async () => {
