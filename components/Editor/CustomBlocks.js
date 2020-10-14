@@ -61,7 +61,7 @@ export const registerCustomBlocks = () => {
           }
         }
         return `
-          <div style="display: flex; margin: auto; width: 90%; max-width: 100%">
+          <div style="display: flex; justify-content: center; align-items: center;">
             <blockquote class="twitter-tweet blank-quote">
               <div id="temporary-loader" class="loader" />
               <a tabindex="-1" href="${data.url}"></a>
