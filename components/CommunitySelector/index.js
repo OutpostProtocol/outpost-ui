@@ -6,7 +6,7 @@ import {
 } from '@material-ui/core'
 
 import { capitalize } from '../../utils'
-import { useCommunity } from '../../hooks'
+import { useCommunities } from '../../hooks'
 
 const CommunitySelect = styled(Select)({
   float: 'left',
@@ -15,7 +15,7 @@ const CommunitySelect = styled(Select)({
 
 const CommunitySelector = ({ handleSelection, placeHolder, disabled }) => {
   const [activeCommunity, setActiveCommunity] = useState(placeHolder)
-  const { data, loading, error } = useCommunity()
+  const { data, loading, error } = useCommunities()
 
   const switchActiveCommunity = (event) => {
     if (event && event.target.value && !disabled) {
@@ -27,7 +27,7 @@ const CommunitySelector = ({ handleSelection, placeHolder, disabled }) => {
   if (loading) return null
   if (error) return `Error! ${error.message}`
 
-  const communities = data.community
+  const communities = data.allCommunities
 
   return (
     <CommunitySelect
