@@ -7,7 +7,7 @@ export const ERROR_TYPES = {
 }
 
 export const PLACEHOLDER_COMMUNITY = {
-  name: 'Community',
+  name: 'Publication',
   txId: 'PLACEHOLDER'
 }
 

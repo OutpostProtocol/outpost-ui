@@ -50,6 +50,7 @@ const ROLE_QUERY = gql`
       community {
         txId
         name
+        slug
       }
     }
   }

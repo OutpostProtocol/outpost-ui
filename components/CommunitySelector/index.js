@@ -15,8 +15,7 @@ const CommunitySelect = styled(Select)({
 
 const CommunitySelector = ({ handleSelection, placeHolder, disabled }) => {
   const roles = useAccountRoles()
-  const initialCommunity = roles && roles[0] && roles[0].community
-  const [activeCommunity, setActiveCommunity] = useState(initialCommunity || placeHolder)
+  const [activeCommunity, setActiveCommunity] = useState(placeHolder)
 
   const switchActiveCommunity = (event) => {
     if (event && event.target.value && !disabled) {
@@ -31,6 +30,11 @@ const CommunitySelector = ({ handleSelection, placeHolder, disabled }) => {
       value={activeCommunity}
       onChange={switchActiveCommunity}
     >
+      <MenuItem value={placeHolder} >
+        <em>
+          {capitalize(placeHolder.name)}
+        </em>
+      </MenuItem>
       {roles && roles.map((r, i) => {
         if (!r || !r.community) return
         const com = r.community

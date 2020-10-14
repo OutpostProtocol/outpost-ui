@@ -36,43 +36,6 @@ export const useCommunities = () => {
   return result
 }
 
-/**
- * Get a community
- *
- * @returns {Object} a community
- */
-export const useCommunity = () => {
-  const JAMM_SLUG = 'jammsession'
-
-  const GET_COMMUNITY = gql`
-    query community($slug: String) {
-      community(slug: $slug) {
-        id
-        name
-        txId
-        tokenAddress
-        tokenSymbol
-        description
-        imageTxId
-        readRequirement
-        owner {
-          name
-          image
-        }
-      }
-    }
-  `
-  const { loading, error, data } = useQuery(
-    GET_COMMUNITY,
-    {
-      variables: {
-        slug: JAMM_SLUG
-      }
-    })
-  useErrorReporting(ERROR_TYPES.query, error, 'GET_COMMUNITY')
-  return { data, loading, error }
-}
-
 export const useUser = (ethAddr) => {
   const GET_USER = gql`
     query user($ethAddr: String) {

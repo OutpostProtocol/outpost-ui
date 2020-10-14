@@ -105,7 +105,7 @@ const MastHead = () => {
   const community = useCommunity()
   const [showModal, toggleModal] = useState(false)
 
-  const { imageTxId, name, description, tokenSymbol, tokenAddress, owner } = community
+  const { imageTxId, name, description, tokenSymbol, tokenAddress, owner, showOwner } = community
   return (
     <Container>
       <PaddingContainer>
@@ -133,7 +133,7 @@ const MastHead = () => {
         <Header>
           <HeaderImages>
             <CommunityImage src={`https://arweave.net/${imageTxId}`} alt={name} />
-            {owner.image &&
+            {showOwner && owner.image &&
             <ProfileImage src={owner.image} alt={`${name} Creator`} />
             }
           </HeaderImages>
@@ -142,7 +142,7 @@ const MastHead = () => {
               {name}
             </Name>
             <Author>
-              {owner.name &&
+              {showOwner &&
                 `By ${owner.name}`
               }
             </Author>

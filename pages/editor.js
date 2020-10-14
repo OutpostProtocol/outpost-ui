@@ -21,7 +21,6 @@ import {
 } from '../constants'
 import PostActions from '../components/Editor/PostActions'
 import EditorPreview from '../components/Editor/EditorPreview'
-import CanonicalLinkOption from '../components/Editor/CanonicalLinkOption'
 
 const ContentEditor = dynamic(import('../components/Editor/ContentEditor'), { ssr: false, loading: () => <LoadingBackdrop isLoading={true} /> })
 
@@ -83,6 +82,7 @@ const EditorPage = () => {
     if (event?.target?.value) {
       setSlug(event.target.value.slug)
       setCommunityId(event.target.value.txId)
+      console.log(event.target.value, 'THE VALUE OF THE TARGET')
     }
   }
 
@@ -132,7 +132,7 @@ const EditorPage = () => {
       alert('Either disable the canonical link or enter a valid URL [https://www.example.com]')
       return false
     } else if (communityId === '' || communityId === PLACEHOLDER_COMMUNITY.txId) {
-      alert('Select a community')
+      alert('Select a publication')
       return false
     } else if (subtitle === '') {
       alert('This post has no subtitle')
@@ -180,18 +180,6 @@ const EditorPage = () => {
             handlePost={handlePost}
           />
         </PreviewContainer>
-        {showPreview
-          ? <WarningText>
-              WARNING: All posts are permanently added to a public blockchain.
-          </WarningText>
-          : null
-        }
-        <CanonicalLinkOption
-          hasCanonicalLink={hasCanonicalLink}
-          setHasLink={setHasLink}
-          canonicalLink={canonicalLink}
-          setCanonicalLink={setCanonicalLink}
-        />
       </EditorContainer>
     </>
   )

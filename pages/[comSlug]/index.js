@@ -74,6 +74,7 @@ export async function getServerSideProps (context) {
           name
           image
         }
+        showOwner
       }
     }
   `

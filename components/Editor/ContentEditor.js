@@ -231,25 +231,27 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
           placeholder='Subtitle'
           disableUnderline={true}
         />
-        <ImageContainer onClick={() => handleImage(true) }>
-          { featuredImg ? (
-            <>
-              <FeaturedImage src={featuredImg} alt='Placeholder ft img' />
-              { isFeaturedImageLoading &&
-                <CenteredText><CircularProgress /></CenteredText>
-              }
-            </>
-          ) : (
-            <>
-              <FeaturedImage src='/editor/placeholder.png' alt='Placeholder ft img' />
-              { isFeaturedImageLoading
-                ? <CenteredText><CircularProgress /></CenteredText>
-                : <CenteredText>FEATURE AN IMAGE</CenteredText>
-              }
-            </>
-          )
-          }
-        </ImageContainer>
+        {false &&
+          <ImageContainer onClick={() => handleImage(true) }>
+            { featuredImg ? (
+              <>
+                <FeaturedImage src={featuredImg} alt='Placeholder ft img' />
+                { isFeaturedImageLoading &&
+                  <CenteredText><CircularProgress /></CenteredText>
+                }
+              </>
+            ) : (
+              <>
+                <FeaturedImage src='/editor/placeholder.png' alt='Placeholder ft img' />
+                { isFeaturedImageLoading
+                  ? <CenteredText><CircularProgress /></CenteredText>
+                  : <CenteredText>FEATURE AN IMAGE</CenteredText>
+                }
+              </>
+            )
+            }
+          </ImageContainer>
+        }
       </TitleContainer>
       <div>
         <FormattingToolbar />

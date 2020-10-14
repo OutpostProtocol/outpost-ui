@@ -133,7 +133,7 @@ const Home = ({ communities }) => {
                   <ComDescription>
                     {com.description}
                   </ComDescription>
-                  {com.owner.name &&
+                  {com.showOwner &&
                     <ComAuthor>
                       By {com.owner.name}
                     </ComAuthor>
@@ -164,6 +164,7 @@ export async function getStaticProps () {
         owner {
           name
         }
+        showOwner
       }
     }
   `
