@@ -61,7 +61,7 @@ export const registerCustomBlocks = () => {
           }
         }
         return `
-          <div contenteditable="false" style="display: flex; margin: auto; width: 90%; max-width: 100%">
+          <div style="display: flex; justify-content: center; align-items: center;">
             <blockquote class="twitter-tweet blank-quote">
               <div id="temporary-loader" class="loader" />
               <a tabindex="-1" href="${data.url}"></a>
@@ -73,7 +73,6 @@ export const registerCustomBlocks = () => {
 
       const innerHTML = buildInnerHtml(data)
       node.innerHTML = innerHTML
-      node.setAttribute('contenteditable', false)
       node.setAttribute('data-url', data.url)
       return node
     }

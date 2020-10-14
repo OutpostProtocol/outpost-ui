@@ -95,7 +95,7 @@ export const modules = {
     userOnly: true
   },
   clipboard: {
-    matchVisual: false,
+    matchVisual: true,
     matchers: [
       ['br', ignoreEmptyParagraphs],
       [Node.TEXT_NODE, autoEmbed]
