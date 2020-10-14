@@ -151,16 +151,18 @@ const MastHead = () => {
             </Description>
           </CommunityInfo>
         </Header>
-        <BuyContainer>
-          <Button
-            variant='contained'
-            color='secondary'
-            disableElevation
-            onClick={() => toggleModal(true)}
-          >
-          BUY ${tokenSymbol}
-          </Button>
-        </BuyContainer>
+        {tokenSymbol &&
+          <BuyContainer>
+            <Button
+              variant='contained'
+              color='secondary'
+              disableElevation
+              onClick={() => toggleModal(true)}
+            >
+            BUY ${tokenSymbol}
+            </Button>
+          </BuyContainer>
+        }
       </PaddingContainer>
     </Container>
   )

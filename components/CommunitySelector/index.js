@@ -6,7 +6,7 @@ import {
 } from '@material-ui/core'
 
 import { capitalize } from '../../utils'
-import { useCommunities } from '../../hooks'
+import { useAccountRoles } from '../../context/Role'
 
 const CommunitySelect = styled(Select)({
   float: 'left',
@@ -14,8 +14,9 @@ const CommunitySelect = styled(Select)({
 })
 
 const CommunitySelector = ({ handleSelection, placeHolder, disabled }) => {
-  const [activeCommunity, setActiveCommunity] = useState(placeHolder)
-  const { data, loading, error } = useCommunities()
+  const roles = useAccountRoles()
+  const initialCommunity = roles && roles[0] && roles[0].community
+  const [activeCommunity, setActiveCommunity] = useState(initialCommunity || placeHolder)
 
   const switchActiveCommunity = (event) => {
     if (event && event.target.value && !disabled) {
@@ -24,23 +25,15 @@ const CommunitySelector = ({ handleSelection, placeHolder, disabled }) => {
     }
   }
 
-  if (loading) return null
-  if (error) return `Error! ${error.message}`
-
-  const communities = data.allCommunities
-
   return (
     <CommunitySelect
       labelId='input-label'
       value={activeCommunity}
       onChange={switchActiveCommunity}
     >
-      <MenuItem value={placeHolder} >
-        <em>
-          {capitalize(placeHolder.name)}
-        </em>
-      </MenuItem>
-      {communities && communities.map((com, i) => {
+      {roles && roles.map((r, i) => {
+        if (!r || !r.community) return
+        const com = r.community
         return (
           <MenuItem
             key={i}

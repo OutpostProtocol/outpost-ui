@@ -55,7 +55,11 @@ const Editor = styled(ReactQuill)({
 const ImageContainer = styled('div')({
   position: 'relative',
   color: '#a6a6a6',
-  'text-align': 'center'
+  'text-align': 'center',
+  '&:hover': {
+    opacity: 0.9,
+    cursor: 'pointer'
+  }
 })
 
 const CenteredText = styled('div')({
@@ -72,10 +76,7 @@ const FeaturedImage = styled('img')({
   height: 'auto',
   maxHeight: '200px',
   marginTop: '10px',
-  'object-fit': 'cover',
-  '&:hover': {
-    opacity: 0.7
-  }
+  'object-fit': 'cover'
 })
 
 const EditorContainer = styled(Editor)({
@@ -232,9 +233,7 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
           placeholder='Subtitle'
           disableUnderline={true}
         />
-        <ImageContainer
-          onClick={() => handleImage(true) }
-        >
+        <ImageContainer onClick={() => handleImage(true) }>
           { featuredImg ? (
             <>
               <FeaturedImage src={featuredImg} alt='Placeholder ft img' />
@@ -262,7 +261,6 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
         />
         <EditorContainer
           id='editor-container'
-          placeholder='Begin writing your post'
           theme='bubble'
           ref={editorRef}
           value={postText}
