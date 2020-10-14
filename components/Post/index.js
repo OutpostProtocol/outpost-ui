@@ -92,7 +92,7 @@ const Post = ({ post, comments }) => {
   const router = useRouter()
   useErrorReporting(ERROR_TYPES.mutation, error, 'DELETE_POST')
   const isAuthor = () => {
-    return false
+    return true
   }
 
   const handleEdit = () => {
@@ -101,23 +101,20 @@ const Post = ({ post, comments }) => {
   }
 
   const handleDelete = async () => {
-    alert('PLEASE CONTACT DEVS TO ADD ABILITY TO DELETE POSTS')
-    /*
     setIsDeleting(true)
-    const res = await deletePost(txId, community.txId)
-    if (res.status === 200 && res.data.status === 200) {
-      await deletePostFromDb({
-        variables: {
-          txId
-        },
-        refetchQueries: [{ query: GET_POSTS }]
-      })
-      router.push('/')
-    } else {
-      alert('Error deleting post')
-    }
+    const response = await deletePostFromDb({
+      variables: {
+        txId
+      },
+      refetchQueries: [{ query: GET_POSTS }]
+    })
+    console.log('response is', response)
+
+    const comSlug = router.query.comSlug
+    if (comSlug) router.push(`/${comSlug}`)
+    else router.push('/')
+
     setIsDeleting(false)
-    */
   }
 
   return (
