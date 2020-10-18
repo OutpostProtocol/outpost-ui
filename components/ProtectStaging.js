@@ -4,10 +4,8 @@ import Web3Status from './Web3Status'
 import { useAccountRoles } from '../context/Role'
 import { useWeb3React } from '@web3-react/core'
 
-const NODE_ENV = process.env.NODE_ENV
-
 const ProtectStaging = ({ children }) => {
-  if (NODE_ENV !== 'staging') {
+  if (process.env.IS_STAGING !== 'yes') {
     return children
   }
 
