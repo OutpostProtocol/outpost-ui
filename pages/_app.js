@@ -14,7 +14,6 @@ import { ethers } from 'ethers'
 import fetch from 'isomorphic-fetch'
 import { AuthProvider } from '../context/Auth'
 import { RoleProvider } from '../context/Role'
-import ProtectStaging from '../components/ProtectStaging'
 import theme from '../styles/theme'
 
 import '../styles/global.css'
@@ -54,18 +53,16 @@ function OutpostApp ({ Component, pageProps }) {
           <Web3ReactProvider getLibrary={getLibrary}>
             <AuthProvider >
               <RoleProvider>
-                <ProtectStaging>
-                  <main
-                    style={{
-                      height: '100%',
-                      width: '100%',
-                      top: '0',
-                      left: '0'
-                    }}
-                  >
-                    <Component {...pageProps} />
-                  </main>
-                </ProtectStaging>
+                <main
+                  style={{
+                    height: '100%',
+                    width: '100%',
+                    top: '0',
+                    left: '0'
+                  }}
+                >
+                  <Component {...pageProps} />
+                </main>
               </RoleProvider>
             </AuthProvider>
           </Web3ReactProvider>

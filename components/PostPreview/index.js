@@ -92,6 +92,8 @@ const PostPreview = ({ post }) => {
     router.push(url)
   }
 
+  console.log(user, 'THE USER')
+
   return (
     <PostContainer
       onClick={handleRedirect}
@@ -119,10 +121,12 @@ const PostPreview = ({ post }) => {
           </Date>
         </Context>
       </PostInfo>
-      <Requirement>
-        <StyledLock />
-        REQUIRES {community.readRequirement} ${community.tokenSymbol}
-      </Requirement>
+      {community.tokenSymbol &&
+        <Requirement>
+          <StyledLock />
+          REQUIRES {community.readRequirement} ${community.tokenSymbol}
+        </Requirement>
+      }
     </PostContainer>
   )
 }
