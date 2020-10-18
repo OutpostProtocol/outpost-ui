@@ -37,6 +37,7 @@ export const GET_POST = gql`
         postText
         subtitle
         timestamp
+        featuredImg
         canonicalLink
         txId
         community {
@@ -135,6 +136,8 @@ export const useOnePost = (txId, userToken) => {
       }
     }
   })
+
+  console.log('the error from getting the post is ', error)
 
   useEffect(() => {
     if (data) {

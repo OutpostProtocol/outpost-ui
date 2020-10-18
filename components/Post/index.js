@@ -96,19 +96,17 @@ const Post = ({ post, comments }) => {
   }
 
   const handleEdit = () => {
-    alert('PLEASE CONTACT DEVS TO ADD ABILITY TO EDIT POSTS')
-    // navigate('/editor', { state: { post } })
+    router.push({ pathname: '/editor', query: { txId } })
   }
 
   const handleDelete = async () => {
     setIsDeleting(true)
-    const response = await deletePostFromDb({
+    await deletePostFromDb({
       variables: {
         txId
       },
       refetchQueries: [{ query: GET_POSTS }]
     })
-    console.log('response is', response)
 
     const comSlug = router.query.comSlug
     if (comSlug) router.push(`/${comSlug}`)
