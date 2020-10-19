@@ -152,7 +152,7 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
     return new Promise((resolve, reject) => {
       input.onchange = async () => {
         const file = input.files[0]
-        const index = window?.editor.getSelection(true).index || 0
+        const index = window?.editor?.getSelection(true).index || 0
         if (isFeaturedImage) setIsFeaturedImageLoading(true)
         else {
           window.editor.insertEmbed(index, 'image', loadingImg)
