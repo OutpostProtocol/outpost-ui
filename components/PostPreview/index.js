@@ -92,8 +92,6 @@ const PostPreview = ({ post }) => {
     router.push(url)
   }
 
-  console.log(user, 'THE USER')
-
   return (
     <PostContainer
       onClick={handleRedirect}

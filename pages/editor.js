@@ -9,6 +9,7 @@ import {
 } from '@apollo/client'
 import dynamic from 'next/dynamic'
 
+import useAuth from '../hooks/useAuth'
 import Toolbar from '../components/Toolbar'
 import { GET_POSTS } from '../hooks/usePosts'
 import { isValidURL } from '../utils'
@@ -41,8 +42,8 @@ const WarningText = styled('div')({
 })
 
 const UPLOAD_POST = gql`
-  mutation UploadPost($postUpload: PostUpload!, $ethAddr: String!, $communityTxId: String!) {
-    uploadPost(postUpload: $postUpload, ethAddr: $ethAddr, communityTxId: $communityTxId) {
+  mutation UploadPost($postUpload: PostUpload!, $communityTxId: String!) {
+    uploadPost(postUpload: $postUpload, communityTxId: $communityTxId) {
       txId
       title
       postText
@@ -60,6 +61,7 @@ const UPLOAD_POST = gql`
 `
 
 const EditorPage = () => {
+  const { authToken, fetchToken } = useAuth()
   const router = useRouter()
   const isEditingMode = false
   const postTemplate = false
@@ -76,13 +78,26 @@ const EditorPage = () => {
   const [hasCanonicalLink, setHasLink] = useState(false)
   const [canonicalLink, setCanonicalLink] = useState('')
   const [slug, setSlug] = useState('')
-  const [uploadPostToDb, { error }] = useMutation(UPLOAD_POST)
+  const [uploadPostToDb, { error }] = useMutation(UPLOAD_POST, {
+    context: {
+      headers: {
+        authorization: authToken
+      }
+    },
+    onError: async () => {
+      await fetchToken()
+      await handlePost()
+    },
+    onCompleted: (res) => {
+      if (slug && res?.uploadPost?.txId) router.push(`/${slug}/post/${res.uploadPost.txId}`)
+      else router.push('/')
+    }
+  })
 
   const handleCommunitySelection = (event) => {
     if (event?.target?.value) {
       setSlug(event.target.value.slug)
       setCommunityId(event.target.value.txId)
-      console.log(event.target.value, 'THE VALUE OF THE TARGET')
     }
   }
 
@@ -110,15 +125,12 @@ const EditorPage = () => {
     const options = {
       variables: {
         postUpload: postUpload,
-        ethAddr: account,
         communityTxId: communityId
       },
       refetchQueries: [{ query: GET_POSTS }]
     }
 
-    const res = await uploadPostToDb(options)
-    if (slug && res?.data?.uploadPost?.txId) router.push(`/${slug}/post/${res.data.uploadPost.txId}`)
-    else router.push('/')
+    await uploadPostToDb(options)
   }
 
   const isValidPost = () => {
