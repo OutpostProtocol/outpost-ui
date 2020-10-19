@@ -37,10 +37,12 @@ export const GET_POST = gql`
         postText
         subtitle
         timestamp
+        featuredImg
         canonicalLink
         txId
         community {
           name
+          slug
           txId
         }
         user {
@@ -121,6 +123,8 @@ const usePosts = (communityTxId) => {
 }
 
 export const useOnePost = (txId, userToken) => {
+  if (!txId) return { postData: undefined, loading: undefined, error: undefined, refetch: undefined }
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [postData, setPostData] = useState()
   const [loading, setLoading] = useState(true)
   const { data, error, refetch } = useQuery(GET_POST, {

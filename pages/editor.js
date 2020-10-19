@@ -1,4 +1,7 @@
-import React, { useState } from 'react'
+import React, {
+  useState,
+  useEffect
+} from 'react'
 import { useRouter } from 'next/router'
 import { styled } from '@material-ui/core/styles'
 import { useWeb3React } from '@web3-react/core'
@@ -11,7 +14,11 @@ import dynamic from 'next/dynamic'
 
 import useAuth from '../hooks/useAuth'
 import Toolbar from '../components/Toolbar'
-import { GET_POSTS } from '../hooks/usePosts'
+import {
+  useOnePost,
+  GET_POSTS
+} from '../hooks/usePosts'
+import useAuth from '../hooks/useAuth'
 import { isValidURL } from '../utils'
 import LoadingBackdrop from '../components/LoadingBackdrop'
 import SEO from '../components/seo'
@@ -63,16 +70,17 @@ const UPLOAD_POST = gql`
 const EditorPage = () => {
   const { authToken, fetchToken } = useAuth()
   const router = useRouter()
-  const isEditingMode = false
-  const postTemplate = false
+  const { authToken } = useAuth()
+  const { postData, loading } = useOnePost(router.query?.txId, authToken)
+  const isEditingMode = router.query?.txId !== undefined
   const placeholderCommunity = PLACEHOLDER_COMMUNITY
 
   const { account } = useWeb3React()
-  const [postText, setPostText] = useState(postTemplate?.postText || '')
+  const [title, setTitle] = useState('')
+  const [featuredImage, setFeaturedImage] = useState(undefined)
+  const [subtitle, setSubtitle] = useState('')
+  const [postText, setPostText] = useState('')
   const [communityId, setCommunityId] = useState(placeholderCommunity.txId)
-  const [title, setTitle] = useState(postTemplate?.title)
-  const [subtitle, setSubtitle] = useState(postTemplate?.subtitle)
-  const [featuredImage, setFeaturedImage] = useState(postTemplate?.featuredImage)
   const [isWaitingForUpload, setIsWaiting] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [hasCanonicalLink, setHasLink] = useState(false)
@@ -94,6 +102,17 @@ const EditorPage = () => {
     }
   })
 
+  useEffect(() => { // Load post and populate fields
+    const post = postData?.post
+    if (post && !loading) {
+      setTitle(post.title)
+      setSubtitle(post.subtitle)
+      setFeaturedImage(post.featuredImg)
+      setPostText(post.postText)
+      setSlug(post.community?.slug)
+    }
+  }, [postData, loading])
+
   const handleCommunitySelection = (event) => {
     if (event?.target?.value) {
       setSlug(event.target.value.slug)
@@ -105,13 +124,13 @@ const EditorPage = () => {
     if (!isValidPost) return
     setIsWaiting(true)
     const parsedPost = converter.makeHtml(postText.replace(/\\/g, '<br/>'))
-    const timestamp = Math.floor(Date.now() / 1000)
+    const timestamp = postData?.timestamp || Math.floor(Date.now() / 1000)
     const postUpload = {
       title: title,
       subtitle: subtitle,
       postText: parsedPost,
       canonicalLink: canonicalLink,
-      // parentTxId: postTemplate?.transaction.txId,
+      parentTxId: router.query?.txId,
       timestamp: timestamp,
       featuredImg: featuredImage
     }
@@ -125,7 +144,7 @@ const EditorPage = () => {
     const options = {
       variables: {
         postUpload: postUpload,
-        communityTxId: communityId
+        communityTxId: postData?.post?.community?.txId || communityId
       },
       refetchQueries: [{ query: GET_POSTS }]
     }
@@ -181,11 +200,13 @@ const EditorPage = () => {
           />
         }
         <PreviewContainer>
+          { !(postData?.post?.community?.txId) &&
           <CommunitySelector
             handleSelection={handleCommunitySelection}
             placeHolder={placeholderCommunity}
             disabled={isEditingMode}
           />
+          }
           <PostActions
             setShowPreview={setShowPreview}
             showPreview={showPreview}

@@ -92,32 +92,27 @@ const Post = ({ post, comments }) => {
   const router = useRouter()
   useErrorReporting(ERROR_TYPES.mutation, error, 'DELETE_POST')
   const isAuthor = () => {
-    return false
+    return true
   }
 
   const handleEdit = () => {
-    alert('PLEASE CONTACT DEVS TO ADD ABILITY TO EDIT POSTS')
-    // navigate('/editor', { state: { post } })
+    router.push({ pathname: '/editor', query: { txId } })
   }
 
   const handleDelete = async () => {
-    alert('PLEASE CONTACT DEVS TO ADD ABILITY TO DELETE POSTS')
-    /*
     setIsDeleting(true)
-    const res = await deletePost(txId, community.txId)
-    if (res.status === 200 && res.data.status === 200) {
-      await deletePostFromDb({
-        variables: {
-          txId
-        },
-        refetchQueries: [{ query: GET_POSTS }]
-      })
-      router.push('/')
-    } else {
-      alert('Error deleting post')
-    }
+    await deletePostFromDb({
+      variables: {
+        txId
+      },
+      refetchQueries: [{ query: GET_POSTS }]
+    })
+
+    const comSlug = router.query.comSlug
+    if (comSlug) router.push(`/${comSlug}`)
+    else router.push('/')
+
     setIsDeleting(false)
-    */
   }
 
   return (
