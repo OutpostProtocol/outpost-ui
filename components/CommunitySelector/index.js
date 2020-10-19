@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { styled } from '@material-ui/core/styles'
 import {
   Select,
@@ -16,6 +16,7 @@ const CommunitySelect = styled(Select)({
 const CommunitySelector = ({ handleSelection, placeHolder, disabled }) => {
   const roles = useAccountRoles()
   const [activeCommunity, setActiveCommunity] = useState(placeHolder)
+  const [communities, setCommunities] = useState([])
 
   const switchActiveCommunity = (event) => {
     if (event && event.target.value && !disabled) {
@@ -23,6 +24,15 @@ const CommunitySelector = ({ handleSelection, placeHolder, disabled }) => {
       handleSelection(event)
     }
   }
+
+  useEffect(() => {
+    const coms = {}
+    roles.forEach(r => {
+      coms[r.community.name] = r.community
+    })
+
+    setCommunities(Object.values(coms))
+  }, [roles])
 
   return (
     <CommunitySelect
@@ -35,14 +45,13 @@ const CommunitySelector = ({ handleSelection, placeHolder, disabled }) => {
           {capitalize(placeHolder.name)}
         </em>
       </MenuItem>
-      {roles && roles.map((r, i) => {
-        if (!r || !r.community) return
-        const com = r.community
+      {communities && communities.map((c, i) => {
+        if (!c) return
         return (
           <MenuItem
             key={i}
-            value={com}>
-            {capitalize(com.name)}
+            value={c}>
+            {capitalize(c.name)}
           </MenuItem>
         )
       })}
