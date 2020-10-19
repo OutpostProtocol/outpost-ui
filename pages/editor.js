@@ -18,7 +18,6 @@ import {
   useOnePost,
   GET_POSTS
 } from '../hooks/usePosts'
-import useAuth from '../hooks/useAuth'
 import { isValidURL } from '../utils'
 import LoadingBackdrop from '../components/LoadingBackdrop'
 import SEO from '../components/seo'
@@ -70,7 +69,6 @@ const UPLOAD_POST = gql`
 const EditorPage = () => {
   const { authToken, fetchToken } = useAuth()
   const router = useRouter()
-  const { authToken } = useAuth()
   const { postData, loading } = useOnePost(router.query?.txId, authToken)
   const isEditingMode = router.query?.txId !== undefined
   const placeholderCommunity = PLACEHOLDER_COMMUNITY
