@@ -122,6 +122,7 @@ const usePosts = (communityTxId) => {
 }
 
 export const useOnePost = (txId, userToken) => {
+  if (!txId) return { postData: undefined, loading: undefined, error: undefined, refetch: undefined }
   const [postData, setPostData] = useState()
   const [loading, setLoading] = useState(true)
   const { data, error, refetch } = useQuery(GET_POST, {
