@@ -7,6 +7,7 @@ import {
   gql,
   useMutation
 } from '@apollo/client'
+import { useWeb3React } from '@web3-react/core'
 
 import Share from '../Share'
 import LoadingBackdrop from '../LoadingBackdrop'
@@ -85,13 +86,15 @@ const DELETE_POST = gql`
   `
 
 const Post = ({ post, comments }) => {
-  const { title, subtitle, postText, /* user, */ txId, community } = post
+  const { account } = useWeb3React()
+  const { title, subtitle, postText,  user, txId, community } = post
   const [isDeleting, setIsDeleting] = useState(false)
   const [deletePostFromDb, { error }] = useMutation(DELETE_POST)
   const router = useRouter()
   useErrorReporting(ERROR_TYPES.mutation, error, 'DELETE_POST')
+
   const isAuthor = () => {
-    return true
+    return account.toLowerCase() === user.address
   }
 
   const handleEdit = () => {
