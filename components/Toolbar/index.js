@@ -1,7 +1,7 @@
 import React, {
 } from 'react'
 import { styled } from '@material-ui/core/styles'
-import { IconButton } from '@material-ui/core'
+import { IconButton, Button } from '@material-ui/core'
 import { CreateOutlined, ChevronLeft } from '@material-ui/icons'
 import { useCommunity } from '../../context/Community'
 import { useAccountRoles } from '../../context/Role'
@@ -11,7 +11,7 @@ import { useRouter } from 'next/router'
 import ProfileImage from '../Profile/ProfileImage'
 import Web3Status from '../Web3Status'
 
-const CreateButton = styled(IconButton)({
+const EditorButton = styled(IconButton)({
   'margin-right': '10px'
 })
 
@@ -43,11 +43,11 @@ const Toolbar = ({ prevUrl }) => {
       {active &&
         <ImgContainer>
           {roles.length > 0 &&
-            <CreateButton
+            <EditorButton
               onClick={handleOpenEditor}
             >
               <CreateOutlined />
-            </CreateButton>
+            </EditorButton>
           }
           <ProfileImage
             userAddress={account}
@@ -66,7 +66,14 @@ const ToolbarContainer = styled('div')({
   height: '60px',
   display: 'flex',
   width: '99vw',
-  'justify-content': 'space-between'
+  'justify-content': 'center'
+})
+
+const MaxWidthContainer = styled('div')({
+  display: 'flex',
+  'justify-content': 'space-between',
+  'max-width': '1500px',
+  'width': '100%'
 })
 
 const ImageContainer = styled('div')({
@@ -105,6 +112,17 @@ const LeftToolbar = styled('div')({
   display: 'flex'
 })
 
+const CreateOutpost = styled(Button)({
+  height: '2.6em',
+  'border-radius': '4px'
+})
+
+const DiscordLink = styled('a')({
+  'text-decoration': 'none',
+  'margin-left': '1vw',
+  padding: '10px 0'
+})
+
 const CommonToolbar = ({ children, prevUrl }) => {
   const router = useRouter()
   const community = useCommunity()
@@ -121,34 +139,41 @@ const CommonToolbar = ({ children, prevUrl }) => {
 
   return (
     <ToolbarContainer>
-      <LeftToolbar>
-        {router.pathname.length > 1 &&
-          <BackButton
-            color="inherit"
-            aria-label="Go back"
-            edge="end"
-            onClick={() => handleBack()}
-          >
-            <ChevronLeft />
-          </BackButton>
-        }
-        {community &&
-          <CurCommunity>
-            <ImageContainer>
-              <CommunityImage
-                src={`https://arweave.net/${community.imageTxId}`}
-                alt={community.name}
-              />
-            </ImageContainer>
-            <CommunityName>
-              {community.name}
-            </CommunityName>
-          </CurCommunity>
-        }
-      </LeftToolbar>
-      <ProfileContainer>
-        {children}
-      </ProfileContainer>
+      <MaxWidthContainer>
+        <LeftToolbar>
+          {router.pathname.length > 1 &&
+            <BackButton
+              color="inherit"
+              aria-label="Go back"
+              edge="end"
+              onClick={() => handleBack()}
+            >
+              <ChevronLeft />
+            </BackButton>
+          }
+          {community
+            ? <CurCommunity>
+                <ImageContainer>
+                  <CommunityImage
+                    src={`https://arweave.net/${community.imageTxId}`}
+                    alt={community.name}
+                  />
+                </ImageContainer>
+                <CommunityName>
+                  {community.name}
+                </CommunityName>
+              </CurCommunity>
+            : <DiscordLink href='https://discord.gg/GZzSddx'>
+                <CreateOutpost variant='outlined' >
+                  CREATE AN OUTPOST
+                </CreateOutpost>
+              </DiscordLink>
+          }
+        </LeftToolbar>
+        <ProfileContainer>
+          {children}
+        </ProfileContainer>
+      </MaxWidthContainer>
     </ToolbarContainer>
   )
 }
