@@ -1,6 +1,10 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 import { styled } from '@material-ui/core/styles'
+import {
+  Favorite,
+  ChatBubble
+} from '@material-ui/icons'
 import moment from 'moment'
 import LockOpenIcon from '@material-ui/icons/LockOpen'
 
@@ -81,10 +85,19 @@ const StyledLock = styled(LockOpenIcon)({
   'margin-right': '10px'
 })
 
+const LikesAndComments = styled('div')({
+  display: 'flex',
+  alignItems: 'center'
+})
+
+const CommentCount = styled(ChatBubble)({
+  marginLeft: '10px'
+})
+
 const DATE_FORMAT = 'MMMM D YYYY'
 
 const PostPreview = ({ post }) => {
-  const { title, subtitle, user, featuredImg, timestamp, community } = post
+  const { title, subtitle, user, featuredImg, timestamp, community, commentCount, favoriteCount } = post
   const router = useRouter()
 
   const handleRedirect = () => {
@@ -117,6 +130,10 @@ const PostPreview = ({ post }) => {
           <Date>
             {moment.unix(timestamp).format(DATE_FORMAT)}
           </Date>
+          <LikesAndComments>
+            <Favorite /> { favoriteCount }
+            <CommentCount /> { commentCount }
+          </LikesAndComments>
         </Context>
       </PostInfo>
       <Requirement>

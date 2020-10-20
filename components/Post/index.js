@@ -1,7 +1,12 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { styled } from '@material-ui/core/styles'
-import { Close } from '@material-ui/icons'
+import {
+  Favorite,
+  FavoriteBorder,
+  ChatBubble,
+  Close
+} from '@material-ui/icons'
 import {
   Button,
   Dialog,
@@ -14,9 +19,10 @@ import {
 } from '@apollo/client'
 
 import Share from '../Share'
+import useAuth from '../../hooks/useAuth'
 import LoadingBackdrop from '../LoadingBackdrop'
 import Comments from '../Comments'
-import { GET_POSTS } from '../../hooks/usePosts'
+import { GET_POSTS, GET_POST } from '../../hooks/usePosts'
 import { useErrorReporting } from '../../hooks'
 import { ERROR_TYPES } from '../../constants'
 import PostContext from '../PostContext'
@@ -84,11 +90,15 @@ const StyledHr = styled('hr')({
   'background-color': '#c4c4c4'
 })
 
-const DELETE_POST = gql`
-    mutation deletePost($txId: String!) {
-      deletePost(txId: $txId)
-    }
-  `
+const LikesAndComments = styled('div')({
+  display: 'flex',
+  alignItems: 'center'
+})
+
+const CommentCount = styled(ChatBubble)({
+  marginLeft: '10px',
+  marginRight: '10px'
+})
 
 const Confirm = styled(Button)({
   marginRight: '10px'
@@ -114,6 +124,30 @@ const DeleteContainer = styled('div')({
   marginTop: '15px',
   'text-align': 'center'
 })
+
+const IncrLikesButton = styled(IconButton)({
+  padding: '10px',
+  margin: '0px',
+  '&:hover': {
+    background: 'none'
+  }
+})
+
+const LikeCount = styled(Favorite)({
+  padding: '10px'
+})
+
+const DELETE_POST = gql`
+    mutation deletePost($txId: String!) {
+      deletePost(txId: $txId)
+    }
+  `
+
+const INCREMENT_FAVORITES = gql`
+    mutation incrementFavorites($txId: String!) {
+      incrementFavorites(txId: $txId)
+    }
+`
 
 const ConfirmDelete = ({ isOpen, handleClose, handleDelete }) => {
   return (
@@ -144,11 +178,15 @@ const ConfirmDelete = ({ isOpen, handleClose, handleDelete }) => {
 }
 
 const Post = ({ post, comments }) => {
-  const { title, subtitle, postText, /* user, */ txId, community } = post
+  const { title, subtitle, postText, /* user, */ txId, community, favoriteCount, commentCount } = post
   const [isDeleting, setIsDeleting] = useState(false)
+  const [hasLiked, setHasLiked] = useState(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
   const [deletePostFromDb, { error }] = useMutation(DELETE_POST)
+  const [incrementFavorites] = useMutation(INCREMENT_FAVORITES)
+  const { authToken } = useAuth()
   const router = useRouter()
+
   useErrorReporting(ERROR_TYPES.mutation, error, 'DELETE_POST')
   const isAuthor = () => {
     return true
@@ -172,6 +210,33 @@ const Post = ({ post, comments }) => {
     else router.push('/')
 
     setIsDeleting(false)
+  }
+
+  const incrFavorites = async () => {
+    setHasLiked(true)
+    await incrementFavorites({
+      variables: {
+        txId
+      },
+      context: {
+        headers: {
+          authorization: authToken
+        }
+      },
+      refetchQueries: [{
+        query: GET_POST,
+        variables: {
+          txId,
+          userToken: authToken
+        },
+        fetchPolicy: 'network-only',
+        context: {
+          headers: {
+            authorization: authToken
+          }
+        }
+      }]
+    })
   }
 
   return (
@@ -211,6 +276,22 @@ const Post = ({ post, comments }) => {
             communityName={post.community.name}
             timestamp={post.timestamp}
           />
+          <LikesAndComments>
+            { hasLiked ? (
+              <>
+                <LikeCount /> { favoriteCount }
+              </>
+            ) : (
+              <>
+                <IncrLikesButton
+                  onClick={incrFavorites}
+                >
+                  <FavoriteBorder />
+                </IncrLikesButton> { favoriteCount }
+              </>
+            )}
+            <CommentCount /> { commentCount }
+          </LikesAndComments>
           <Share
             url={window.location.href}
             title={title}
