@@ -66,7 +66,6 @@ const Comments = ({ comments, communityTxId, postTxId }) => {
     setIsLoading(true)
 
     const timestamp = Math.floor(Date.now() / 1000)
-    console.log(postTxId, communityTxId, timestamp, newComment, account)
     const options = {
       variables: {
         postTxId: postTxId,
