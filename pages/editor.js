@@ -136,7 +136,6 @@ const EditorPage = () => {
     }
 
     const res = await uploadPostToDb(options)
-    console.log('res is', res)
     if (slug && res?.data?.uploadPost?.txId) router.push(`/${slug}/post/${res.data.uploadPost.txId}`)
     else router.push('/')
   }

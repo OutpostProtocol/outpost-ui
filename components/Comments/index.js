@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { styled } from '@material-ui/styles'
-import { 
+import {
   Button,
   TextField
 } from '@material-ui/core'
@@ -36,8 +36,8 @@ const NewCommnet = styled(TextField)({
 })
 
 const UPLOAD_COMMENT = gql`
-  mutation uploadComment($commentText: String!, $postTxId: String!, $communityTxId: String!, $ethAddr: String!, $timestamp: Int!) {
-    uploadComment(commentText: $commentText, postTxId: $postTxId, communityTxId: $communityTxId, ethAddr: $ethAddr, timestamp: $timestamp) {
+  mutation uploadComment($commentText: String!, $postTxId: String!, $communityTxId: String!, $timestamp: Int!) {
+    uploadComment(commentText: $commentText, postTxId: $postTxId, communityTxId: $communityTxId, timestamp: $timestamp) {
       postText
       timestamp
       user {
@@ -72,8 +72,12 @@ const Comments = ({ comments, communityTxId, postTxId }) => {
         postTxId: postTxId,
         communityTxId: communityTxId,
         timestamp: timestamp,
-        commentText: newComment,
-        ethAddr: account
+        commentText: newComment
+      },
+      context: {
+        headers: {
+          authorization: authToken
+        }
       },
       refetchQueries: [{
         query: GET_POST,
@@ -99,7 +103,7 @@ const Comments = ({ comments, communityTxId, postTxId }) => {
     <>
       <LoadingBackdrop isLoading={isUploadLoading} />
       <CommentsContainer>
-        { comments.map((comment, i) =>
+        {comments.map((comment, i) =>
           <CommentContainer key={i} >
             <Comment
               comment={comment}

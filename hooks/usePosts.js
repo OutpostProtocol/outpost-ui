@@ -16,6 +16,8 @@ export const GET_POSTS = gql`
       timestamp
       txId
       featuredImg
+      commentCount
+      favoriteCount
       community {
         name
         readRequirement
@@ -40,6 +42,8 @@ export const GET_POST = gql`
         featuredImg
         canonicalLink
         txId
+        commentCount
+        favoriteCount
         community {
           name
           slug
