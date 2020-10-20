@@ -1,7 +1,7 @@
 import React, {
 } from 'react'
 import { styled } from '@material-ui/core/styles'
-import { IconButton, Button } from '@material-ui/core'
+import { IconButton } from '@material-ui/core'
 import { CreateOutlined, ChevronLeft } from '@material-ui/icons'
 import { useCommunity } from '../../context/Community'
 import { useAccountRoles } from '../../context/Role'
@@ -112,17 +112,6 @@ const LeftToolbar = styled('div')({
   display: 'flex'
 })
 
-const CreateOutpost = styled(Button)({
-  height: '2.6em',
-  'border-radius': '4px'
-})
-
-const DiscordLink = styled('a')({
-  'text-decoration': 'none',
-  'margin-left': '1vw',
-  padding: '10px 0'
-})
-
 const CommonToolbar = ({ children, prevUrl }) => {
   const router = useRouter()
   const community = useCommunity()
@@ -151,23 +140,18 @@ const CommonToolbar = ({ children, prevUrl }) => {
               <ChevronLeft />
             </BackButton>
           }
-          {community
-            ? <CurCommunity>
-                <ImageContainer>
-                  <CommunityImage
-                    src={`https://arweave.net/${community.imageTxId}`}
-                    alt={community.name}
-                  />
-                </ImageContainer>
-                <CommunityName>
-                  {community.name}
-                </CommunityName>
-              </CurCommunity>
-            : <DiscordLink href='https://discord.gg/GZzSddx'>
-                <CreateOutpost variant='outlined' >
-                  CREATE AN OUTPOST
-                </CreateOutpost>
-              </DiscordLink>
+          {community &&
+             <CurCommunity>
+               <ImageContainer>
+                 <CommunityImage
+                   src={`https://arweave.net/${community.imageTxId}`}
+                   alt={community.name}
+                 />
+               </ImageContainer>
+               <CommunityName>
+                 {community.name}
+               </CommunityName>
+             </CurCommunity>
           }
         </LeftToolbar>
         <ProfileContainer>

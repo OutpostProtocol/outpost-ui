@@ -17,7 +17,7 @@ const theme = createMuiTheme({
     }
   },
   typography: {
-    fontFamily: 'Roboto',
+    fontFamily: 'Inter',
     button: {
       textTransform: 'none'
     }

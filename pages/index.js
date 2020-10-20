@@ -4,12 +4,14 @@ import axios from 'axios'
 import { useRouter } from 'next/router'
 
 import SEO from '../components/seo'
+import Footer from '../components/Footer'
 import Toolbar from '../components/Toolbar'
 
 const OUTPOST_API = process.env.NEXT_PUBLIC_OUTPOST_API
 
 const Container = styled('div')({
-  'overflow-x': 'hidden'
+  'overflow-x': 'hidden',
+  height: '100vh'
 })
 
 const Body = styled('div')({
@@ -145,6 +147,7 @@ const Home = ({ communities }) => {
           </Discover>
         </DiscoverContainer>
       </Body>
+      <Footer />
     </Container>
   )
 }

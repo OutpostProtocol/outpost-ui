@@ -4,8 +4,10 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,700;0,800;1,300;1,400;1,500;1,700;1,800&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap');
+
 :root {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', 'Roboto', sans-serif;
   margin: 0;
   background-color: #FFFFFE;
 }
@@ -187,11 +189,11 @@ img.tweet-user-avatar {
   background-color: #f1f1f1;
 }
 
-.ql-bubble.ql-toolbar button:hover, .ql-bubble .ql-toolbar button:hover, .ql-bubble.ql-toolbar button:focus, 
+.ql-bubble.ql-toolbar button:hover, .ql-bubble .ql-toolbar button:hover, .ql-bubble.ql-toolbar button:focus,
 .ql-bubble .ql-toolbar button:focus, .ql-bubble.ql-toolbar button.ql-active, .ql-bubble .ql-toolbar button.ql-active,
-.ql-bubble.ql-toolbar .ql-picker-label:hover, .ql-bubble .ql-toolbar .ql-picker-label:hover, 
-.ql-bubble.ql-toolbar .ql-picker-label.ql-active, .ql-bubble .ql-toolbar .ql-picker-label.ql-active, 
-.ql-bubble.ql-toolbar .ql-picker-item:hover, .ql-bubble .ql-toolbar .ql-picker-item:hover, 
+.ql-bubble.ql-toolbar .ql-picker-label:hover, .ql-bubble .ql-toolbar .ql-picker-label:hover,
+.ql-bubble.ql-toolbar .ql-picker-label.ql-active, .ql-bubble .ql-toolbar .ql-picker-label.ql-active,
+.ql-bubble.ql-toolbar .ql-picker-item:hover, .ql-bubble .ql-toolbar .ql-picker-item:hover,
 .ql-bubble.ql-toolbar .ql-picker-item.ql-selected, .ql-bubble .ql-toolbar .ql-picker-item.ql-selected {
   color: #1a1a1a;
 }
@@ -267,8 +269,8 @@ ql-bubble.ql-toolbar button:hover,
 /* Tweets */
 /* Raw HTML loader, useful for asynchronous embeds in the editor when using a jsx component is viable */
 .loader {
-  border: 5px solid #f1f1f1; 
-  border-top: 5px solid #1a1a1a; 
+  border: 5px solid #f1f1f1;
+  border-top: 5px solid #1a1a1a;
   border-radius: 50%;
   width: 40px;
   height: 40px;
