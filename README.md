@@ -2,6 +2,15 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
+Set up and `.env.development` file in the root of your server which looks like
+```
+NEXT_PUBLIC_ETH_GATEWAY=https://mainnet.infura.io/v3/your_infura_id
+NEXT_PUBLIC_OUTPOST_API=http://localhost:4000
+NEXT_PUBLIC_MAGIC_KEY=optional_magic_key
+```
+
+If you want to be able to sign in with email, you'll need to get a magic key from [magic](https://magic.link)
+
 First, run the development server:
 
 ```bash
