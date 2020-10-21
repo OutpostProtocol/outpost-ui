@@ -6,6 +6,8 @@ import { useWeb3React } from '@web3-react/core'
 import { useLazyQuery, gql } from '@apollo/client'
 import useAuth from '../hooks/useAuth'
 
+import { queries } from '../graphql';
+
 export const RoleContext = createContext({
   roles: []
 })
@@ -57,15 +59,4 @@ export function RoleProvider ({ children }) {
   )
 }
 
-const ROLE_QUERY = gql`
-  query {
-    userRoles {
-      title
-      community {
-        txId
-        name
-        slug
-      }
-    }
-  }
-`
+const ROLE_QUERY = gql(queries.getUserRoles)

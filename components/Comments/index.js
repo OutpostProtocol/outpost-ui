@@ -14,6 +14,8 @@ import LoadingBackdrop from '../LoadingBackdrop'
 import Comment from './comment'
 import { ERROR_TYPES } from '../../constants'
 
+import { mutations } from '../../graphql'
+
 const PostComment = styled(Button)({
   float: 'right',
   'margin-top': '10px'
@@ -28,17 +30,7 @@ const CommentContainer = styled('div')({
   'margin-top': '20px'
 })
 
-const UPLOAD_COMMENT = gql`
-  mutation uploadComment($commentText: String!, $postTxId: String!, $communityTxId: String!, $ethAddr: String!, $timestamp: Int!) {
-    uploadComment(commentText: $commentText, postTxId: $postTxId, communityTxId: $communityTxId, ethAddr: $ethAddr, timestamp: $timestamp) {
-      postText
-      timestamp
-      user {
-        address
-      }
-    }
-  }
-`
+const UPLOAD_COMMENT = gql(mutations.uploadComment)
 
 const Comments = ({ comments, communityTxId, postTxId }) => {
   const [newComment, setNewComment] = useState('')

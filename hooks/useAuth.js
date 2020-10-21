@@ -6,24 +6,14 @@ import { useMutation, gql } from '@apollo/client'
 import { ethers } from 'ethers'
 import { AuthContext } from '../context/Auth'
 
-const SIGN_IN_TOKEN = gql`
-  mutation getToken($addr: String!) {
-    getSignInToken(addr: $addr)
-  }
-`
+import { mutations } from '../graphql'
 
-const AUTHENTICATE = gql`
-  mutation auth($sig: String!, $addr: String!) {
-    authAccount(signature: $sig, addr: $addr)
-  }
-`
+const SIGN_IN_TOKEN = gql(mutations.getSignInToken)
+
+const AUTHENTICATE = gql(mutations.authAccount)
 
 // validate token isn't really a mutation but we want it to execute like one
-const VALIDATE_TOKEN = gql`
-  mutation validate($token: String!) {
-    verifyToken(token: $token)
-  }
-`
+const VALIDATE_TOKEN = gql(mutations.verifyToken)
 
 const useAuth = () => {
   const { setAuthToken, authToken, setGettingToken, isGettingToken } = useContext(AuthContext)

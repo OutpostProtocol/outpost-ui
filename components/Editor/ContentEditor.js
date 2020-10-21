@@ -25,6 +25,8 @@ import {
   getYoutubeVideo
 } from './CustomBlocks'
 
+import { mutations } from '../graphql'
+
 registerCustomBlocks()
 
 const FormTextField = styled(Input)({
@@ -85,13 +87,7 @@ const EditorContainer = styled(Editor)({
   top: '-50px'
 })
 
-const UPLOAD_IMAGE = gql`
-  mutation uploadImage($image: Image!, $address: String!) {
-    uploadImage(image: $image, address: $address) {
-      txId
-    }
-  }
-`
+const UPLOAD_IMAGE = gql(mutations.uploadImage)
 
 const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSubtitle, setPostText, setFeaturedImage, isEditing }) => {
   const { account } = useWeb3React()
