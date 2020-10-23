@@ -25,7 +25,7 @@ import {
   getYoutubeVideo
 } from './CustomBlocks'
 
-import { mutations } from '../graphql'
+import { mutations } from '../../graphql'
 
 registerCustomBlocks()
 

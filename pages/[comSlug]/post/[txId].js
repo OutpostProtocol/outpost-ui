@@ -201,7 +201,7 @@ export async function getServerSideProps (context) {
   const OUTPOST_API = process.env.NEXT_PUBLIC_OUTPOST_API
   const { txId, comSlug } = context.params
 
-  const query = queries.postPreview;
+  const query = queries.postPreview
 
   const res = await axios.post(OUTPOST_API, {
     query,
