@@ -75,9 +75,11 @@ const EditorPage = () => {
         authorization: authToken
       }
     },
-    onError: async () => {
-      await fetchToken()
-      await handlePost()
+    onError: async (e) => {
+      if (e.message.includes('User not authenticated')) {
+        await fetchToken()
+        await handlePost()
+      }
     },
     onCompleted: (res) => {
       if (slug && res?.uploadPost?.txId) router.push(`/${slug}/post/${res.uploadPost.txId}`)
@@ -124,6 +126,9 @@ const EditorPage = () => {
   }
 
   const handleUpload = async (postUpload) => {
+    const com = postData?.post?.community?.txId || communityId
+    console.log('THE COMMUNITY ID')
+
     const options = {
       variables: {
         postUpload: postUpload,
