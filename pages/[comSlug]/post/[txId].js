@@ -203,6 +203,8 @@ export async function getServerSideProps (context) {
 
   const query = queries.postPreview
 
+  console.log({ txId, comSlug });
+
   const res = await axios.post(OUTPOST_API, {
     query,
     variables: {
