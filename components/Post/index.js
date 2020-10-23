@@ -1,12 +1,7 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { styled } from '@material-ui/core/styles'
-import {
-  Favorite,
-  FavoriteBorder,
-  ChatBubble,
-  Close
-} from '@material-ui/icons'
+import { Close } from '@material-ui/icons'
 import {
   Button,
   Dialog,
@@ -92,12 +87,14 @@ const StyledHr = styled('hr')({
 
 const LikesAndComments = styled('div')({
   display: 'flex',
-  alignItems: 'center'
+  alignItems: 'center',
+  position: 'relative'
 })
 
-const CommentCount = styled(ChatBubble)({
-  marginLeft: '10px',
-  marginRight: '10px'
+const CommentCount = styled('img')({
+  width: '40px',
+  height: '40px',
+  objectFit: 'contain'
 })
 
 const Confirm = styled(Button)({
@@ -126,15 +123,38 @@ const DeleteContainer = styled('div')({
 })
 
 const IncrLikesButton = styled(IconButton)({
-  padding: '10px',
   margin: '0px',
+  zIndex: 1000,
   '&:hover': {
     background: 'none'
   }
 })
 
-const LikeCount = styled(Favorite)({
-  padding: '10px'
+const Favorite = styled('img')({
+  width: '30px',
+  height: '30px',
+  objectFit: 'contain'
+})
+
+const SmallText = styled('p')({
+  fontSize: '12px',
+  fontWeight: '90'
+})
+
+const FavoriteCountContainer = styled('div')({
+  textAlign: 'center',
+  width: '40px',
+  position: 'absolute',
+  right: 27,
+  transform: 'translateX(-50%)'
+})
+
+const CommentCountContainer = styled('div')({
+  textAlign: 'center',
+  width: '40px',
+  position: 'absolute',
+  right: -20,
+  transform: 'translateX(-50%)'
 })
 
 const DELETE_POST = gql`
@@ -278,19 +298,19 @@ const Post = ({ post, comments }) => {
           />
           <LikesAndComments>
             { hasLiked ? (
-              <>
-                <LikeCount /> { favoriteCount }
-              </>
+              <IncrLikesButton disabled={true}>
+                <Favorite src='../../posts/heartFilled.svg' />
+              </IncrLikesButton>
             ) : (
               <>
                 <IncrLikesButton
                   onClick={incrFavorites}
                 >
-                  <FavoriteBorder />
-                </IncrLikesButton> { favoriteCount }
+                  <Favorite src='../../posts/heart.svg' />
+                </IncrLikesButton> <FavoriteCountContainer> <SmallText> { favoriteCount } </SmallText> </FavoriteCountContainer>
               </>
             )}
-            <CommentCount /> { commentCount }
+            <CommentCount src='../../posts/chatBubble.svg' /> <CommentCountContainer> <SmallText> { commentCount } </SmallText> </CommentCountContainer>
           </LikesAndComments>
           <Share
             url={window.location.href}
