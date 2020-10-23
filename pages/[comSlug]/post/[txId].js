@@ -76,7 +76,7 @@ const PostPage = ({ postPreview, community }) => {
   const { account } = useWeb3React()
   const { authToken } = useAuth()
 
-  if (!account || !authToken) {
+  if ((!account || !authToken) && community.readRequirement) {
     return (
       <PostLayout
         context={postPreview}

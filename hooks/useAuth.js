@@ -66,6 +66,7 @@ const useAuth = () => {
   )
 
   const fetchToken = async () => {
+    if (!account) return false
     setGettingToken(true)
     const tokenRes = await getAuthToken({
       variables: {

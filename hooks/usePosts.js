@@ -29,8 +29,8 @@ export const GET_POSTS = gql`
   `
 
 export const GET_POST = gql`
-  query getPost($txId: String!, $userToken: String!) {
-    getPost(txId: $txId, userToken: $userToken) {
+  query getPost($txId: String!) {
+    getPost(txId: $txId) {
       post {
         id
         title
@@ -123,21 +123,16 @@ const usePosts = (communityTxId) => {
 }
 
 export const useOnePost = (txId, userToken) => {
-  if (!txId) return { postData: undefined, loading: undefined, error: undefined, refetch: undefined }
+  if (!txId) return false
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [postData, setPostData] = useState()
   const [loading, setLoading] = useState(true)
   const { data, error, refetch } = useQuery(GET_POST, {
     variables: {
-      txId,
-      userToken
+      txId
     },
     fetchPolicy: 'network-only',
-    context: {
-      headers: {
-        authorization: userToken
-      }
-    }
+    ...getContext(userToken)
   })
 
   useEffect(() => {
@@ -149,6 +144,20 @@ export const useOnePost = (txId, userToken) => {
 
   useErrorReporting(ERROR_TYPES.query, error, 'GET_ONE_POST')
   return { postData, loading, error, refetch }
+}
+
+const getContext = (authToken) => {
+  if (authToken) {
+    return {
+      context: {
+        headers: {
+          authorization: authToken
+        }
+      }
+    }
+  }
+
+  return {}
 }
 
 export default usePosts
