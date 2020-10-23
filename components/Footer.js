@@ -7,7 +7,7 @@ import { icons } from '../constants/outpost-share'
 const Container = styled('div')({
   height: '10vh',
   width: '100%',
-  'margin': '20vh 0 10vh',
+  'margin': '10vh 0',
   display: 'flex',
   'justify-content': 'center',
   'align-items': 'center'
