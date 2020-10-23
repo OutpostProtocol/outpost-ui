@@ -7,6 +7,8 @@ import SEO from '../components/seo'
 import Footer from '../components/Footer'
 import Toolbar from '../components/Toolbar'
 
+import { queries } from '../graphql'
+
 const OUTPOST_API = process.env.NEXT_PUBLIC_OUTPOST_API
 
 const Container = styled('div')({
@@ -119,31 +121,31 @@ const Home = ({ communities }) => {
         </HeaderContainer>
         <DiscoverContainer>
           <Discover>
-          {communities.map((com, i) => {
-            return (
-              <ComContainer
-                key={i}
-                onClick={() => router.push(`/${com.slug}`)}
-              >
-                <ComImgContainer>
-                  <ComImg src={`https://arweave.net/${com.imageTxId}`} />
-                </ComImgContainer>
-                <ComInfo>
-                  <ComName>
-                    {com.name}
-                  </ComName>
-                  <ComDescription>
-                    {com.description}
-                  </ComDescription>
-                  {com.showOwner &&
-                    <ComAuthor>
-                      By {com.owner.name}
-                    </ComAuthor>
-                  }
-                </ComInfo>
-              </ComContainer>
-            )
-          })}
+            {communities.map((com, i) => {
+              return (
+                <ComContainer
+                  key={i}
+                  onClick={() => router.push(`/${com.slug}`)}
+                >
+                  <ComImgContainer>
+                    <ComImg src={`https://arweave.net/${com.imageTxId}`} />
+                  </ComImgContainer>
+                  <ComInfo>
+                    <ComName>
+                      {com.name}
+                    </ComName>
+                    <ComDescription>
+                      {com.description}
+                    </ComDescription>
+                    {com.showOwner &&
+                      <ComAuthor>
+                        By {com.owner.name}
+                      </ComAuthor>
+                    }
+                  </ComInfo>
+                </ComContainer>
+              )
+            })}
           </Discover>
         </DiscoverContainer>
       </Body>
@@ -153,26 +155,8 @@ const Home = ({ communities }) => {
 }
 
 export async function getStaticProps () {
-  const query = `
-    query {
-      allCommunities {
-        id
-        name
-        txId
-        tokenAddress
-        tokenSymbol
-        description
-        imageTxId
-        slug
-        owner {
-          name
-        }
-        showOwner
-      }
-    }
-  `
 
-  const res = await axios.post(OUTPOST_API, { query })
+  const res = await axios.post(OUTPOST_API, { query: queries.getAllCommunities })
 
   const communities = res.data.data.allCommunities
 

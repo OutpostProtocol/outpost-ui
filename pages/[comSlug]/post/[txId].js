@@ -13,6 +13,8 @@ import Post from '../../../components/Post'
 import Toolbar from '../../../components/Toolbar'
 import SEO from '../../../components/seo'
 
+import { queries } from '../../../graphql'
+
 const PostContainer = styled('div')({
   margin: '5em 0',
   padding: '0 20px',
@@ -199,33 +201,7 @@ export async function getServerSideProps (context) {
   const OUTPOST_API = process.env.NEXT_PUBLIC_OUTPOST_API
   const { txId, comSlug } = context.params
 
-  const query = `
-    query postpage($txId: String!, $slug: String!) {
-      postPreview (txId: $txId) {
-        id
-        title
-        subtitle
-        timestamp
-        txId
-        featuredImg
-        canonicalLink
-      }
-      community(slug: $slug) {
-        id
-        name
-        txId
-        tokenAddress
-        tokenSymbol
-        description
-        imageTxId
-        readRequirement
-        owner {
-          name
-          image
-        }
-      }
-    }
-  `
+  const query = queries.postPreview
 
   const res = await axios.post(OUTPOST_API, {
     query,

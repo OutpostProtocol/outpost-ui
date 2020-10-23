@@ -4,6 +4,8 @@ import {
 } from '@apollo/client'
 import { ERROR_TYPES } from '../constants'
 
+import { queries } from '../graphql'
+
 export const useErrorReporting = (type, error, request) => {
   if (error?.message) {
     // TODO: add mixpanel so we can error report
@@ -15,15 +17,18 @@ export const useErrorReporting = (type, error, request) => {
   }
 }
 
-export const GET_ALL_COMMUNITIES = gql`
-  query {
-    allCommunities {
-      id
-      name
-      txId
-      slug
-    }
-  }`
+// XXX: @Sam: This used to be:
+// query {
+//   allCommunities {
+//     id
+//     name
+//     txId
+//     slug
+//   }
+// }
+// Hope it makes sense to reuse the existing query here. It'll return
+// additional unnecessary data you're not interested in.
+export const GET_ALL_COMMUNITIES = gql(queries.getAllCommunities)
 
 /**
  * Get all communities
@@ -37,14 +42,7 @@ export const useCommunities = () => {
 }
 
 export const useUser = (ethAddr) => {
-  const GET_USER = gql`
-    query user($ethAddr: String) {
-      user(ethAddr: $ethAddr) {
-        name,
-        id
-      }
-    }
-    `
+  const GET_USER = gql(queries.getUser)
   const { data, loading, error } = useQuery(GET_USER, {
     variables: {
       ethAddr: ethAddr
@@ -55,11 +53,7 @@ export const useUser = (ethAddr) => {
 }
 
 export const useIsNameAvailable = (name) => {
-  const IS_NAME_AVAILABLE = gql`
-    query isNameAvailable($name: String!) {
-      isNameAvailable(name: $name)
-    }
-  `
+  const IS_NAME_AVAILABLE = gql(queries.isNameAvailable)
 
   const result = useQuery(IS_NAME_AVAILABLE, {
     variables: {

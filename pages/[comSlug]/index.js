@@ -9,6 +9,8 @@ import Feed from '../../components/Feed'
 import Toolbar from '../../components/Toolbar'
 import MastHead from '../../components/MastHead'
 
+import { queries } from '../../graphql'
+
 const OUTPOST_API = process.env.NEXT_PUBLIC_OUTPOST_API
 
 const FeedContainer = styled('div')({
@@ -58,26 +60,7 @@ const CommunityPage = ({ community }) => {
 
 export async function getServerSideProps (context) {
   const slug = context.params.comSlug
-
-  const query = `
-    query ComPage($slug: String) {
-      community(slug: $slug) {
-        id
-        name
-        txId
-        tokenAddress
-        tokenSymbol
-        description
-        imageTxId
-        readRequirement
-        owner {
-          name
-          image
-        }
-        showOwner
-      }
-    }
-  `
+  const query = queries.getCommunityPage
 
   const res = await axios.post(OUTPOST_API, {
     query,
