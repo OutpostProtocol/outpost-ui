@@ -7,80 +7,13 @@ import { useErrorReporting } from './index'
 import { ERROR_TYPES } from '../constants'
 import { useRouter } from 'next/router'
 
-export const GET_POSTS = gql`
-  query posts($slug: String) {
-    posts (communitySlug: $slug) {
-      id
-      title
-      subtitle
-      timestamp
-      txId
-      featuredImg
-      community {
-        name
-        readRequirement
-        tokenSymbol
-      }
-      user {
-        name
-      }
-    }
-  }
-  `
+import { queries } from '../graphql'
 
-export const GET_POST = gql`
-  query getPost($txId: String!, $userToken: String!) {
-    getPost(txId: $txId, userToken: $userToken) {
-      post {
-        id
-        title
-        postText
-        subtitle
-        timestamp
-        featuredImg
-        canonicalLink
-        txId
-        community {
-          name
-          slug
-          txId
-        }
-        user {
-          address
-          name
-          image
-        }
-      }
-      comments {
-        postText
-        timestamp
-        user {
-          address
-          name
-          image
-        }
-      }
-      userBalance
-      readRequirement
-      tokenSymbol
-      tokenAddress
-    }
-  }
-`
+export const GET_POSTS = gql(queries.getPosts)
 
-const GET_PREVIEW = gql`
-  query posts($txId: String!) {
-    postPreview (txId: $txId) {
-      id
-      title
-      subtitle
-      timestamp
-      txId
-      featuredImg
-      canonicalLink
-    }
-  }
-`
+export const GET_POST = gql(queries.getPost)
+
+const GET_PREVIEW = gql(queries.getPostPreview)
 
 export const usePostPreview = (txId) => {
   const [title, setTitle] = useState(null)

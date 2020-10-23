@@ -29,6 +29,8 @@ import {
 import PostActions from '../components/Editor/PostActions'
 import EditorPreview from '../components/Editor/EditorPreview'
 
+import { mutations } from '../graphql';
+
 const ContentEditor = dynamic(import('../components/Editor/ContentEditor'), { ssr: false, loading: () => <LoadingBackdrop isLoading={true} /> })
 
 const converter = new showdown.Converter()
@@ -47,24 +49,7 @@ const WarningText = styled('div')({
   color: '#FF5252'
 })
 
-const UPLOAD_POST = gql`
-  mutation UploadPost($postUpload: PostUpload!, $communityTxId: String!) {
-    uploadPost(postUpload: $postUpload, communityTxId: $communityTxId) {
-      txId
-      title
-      postText
-      subtitle
-      timestamp
-      canonicalLink
-      community {
-        name
-      }
-      user {
-        address
-      }
-    }
-  }
-`
+const UPLOAD_POST = gql(mutations.uploadPost)
 
 const EditorPage = () => {
   const { authToken, fetchToken } = useAuth()
