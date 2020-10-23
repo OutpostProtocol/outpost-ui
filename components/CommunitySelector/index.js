@@ -21,7 +21,7 @@ const CommunitySelector = ({ handleSelection, placeHolder, disabled }) => {
   const switchActiveCommunity = (event) => {
     if (event && event.target.value && !disabled) {
       setActiveCommunity(event.target.value)
-      handleSelection(event)
+      handleSelection(event.target.value)
     }
   }
 
@@ -39,6 +39,7 @@ const CommunitySelector = ({ handleSelection, placeHolder, disabled }) => {
     if (Array.isArray(communities) && communities.length === 1) {
       const [community] = communities
       setActiveCommunity(community)
+      handleSelection(community)
     }
   }, [communities, setCommunities])
 

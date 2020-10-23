@@ -98,10 +98,10 @@ const EditorPage = () => {
     }
   }, [postData, loading])
 
-  const handleCommunitySelection = (event) => {
-    if (event?.target?.value) {
-      setSlug(event.target.value.slug)
-      setCommunityId(event.target.value.txId)
+  const handleCommunitySelection = (community) => {
+    if (community) {
+      setSlug(community.slug)
+      setCommunityId(community.txId)
     }
   }
 
@@ -127,7 +127,6 @@ const EditorPage = () => {
 
   const handleUpload = async (postUpload) => {
     const com = postData?.post?.community?.txId || communityId
-    console.log('THE COMMUNITY ID')
 
     const options = {
       variables: {
