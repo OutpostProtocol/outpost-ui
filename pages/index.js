@@ -57,8 +57,9 @@ const Discover = styled('div')({
 
 const ComContainer = styled('div')({
   display: 'flex',
-  padding: '20px 100px',
+  padding: '10px 100px',
   'border-radius': '4px',
+  'margin': '10px',
   '&:hover': {
     'background-color': '#fafafa',
     cursor: 'pointer'
