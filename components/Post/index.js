@@ -94,7 +94,7 @@ const Post = ({ post, comments }) => {
   useErrorReporting(ERROR_TYPES.mutation, error, 'DELETE_POST')
 
   const isAuthor = () => {
-    return account.toLowerCase() === user.address
+    return account?.toLowerCase() === user.address
   }
 
   const handleEdit = () => {
