@@ -34,6 +34,14 @@ const CommunitySelector = ({ handleSelection, placeHolder, disabled }) => {
     setCommunities(Object.values(coms))
   }, [roles])
 
+  // Help the user. If there's only one community to select, pick it for them.
+  useEffect(() => {
+    if (Array.isArray(communities) && communities.length === 1) {
+      const [community] = communities
+      setActiveCommunity(community)
+    }
+  }, [communities, setCommunities])
+
   return (
     <CommunitySelect
       labelId='input-label'

@@ -87,7 +87,7 @@ const DELETE_POST = gql`
 
 const Post = ({ post, comments }) => {
   const { account } = useWeb3React()
-  const { title, subtitle, postText,  user, txId, community } = post
+  const { title, subtitle, postText, user, txId, community } = post
   const [isDeleting, setIsDeleting] = useState(false)
   const [deletePostFromDb, { error }] = useMutation(DELETE_POST)
   const router = useRouter()
