@@ -39,8 +39,10 @@ const CommunitySelector = ({ handleSelection, placeHolder, disabled }) => {
     if (Array.isArray(communities) && communities.length === 1) {
       const [community] = communities
       setActiveCommunity(community)
+      // TODO: This is a hack. Parent should have the activeCommunity state, not this component.
+      handleSelection({ target: { value: community } })
     }
-  }, [communities, setCommunities])
+  }, [communities, setCommunities, handleSelection])
 
   return (
     <CommunitySelect
