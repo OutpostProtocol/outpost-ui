@@ -248,6 +248,7 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
           id='editor-container'
           theme='bubble'
           ref={editorRef}
+          placeholder="Content"
           value={postText}
           onChange={(value) => setPostText(value)}
           onChangeSelection={handleSelectionChange}
