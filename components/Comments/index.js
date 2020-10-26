@@ -1,14 +1,17 @@
 import React, { useState } from 'react'
 import { styled } from '@material-ui/styles'
-import { Button } from '@material-ui/core'
+import {
+  Button,
+  TextField
+} from '@material-ui/core'
 import {
   gql,
   useMutation
 } from '@apollo/client'
-import Editor from 'rich-markdown-editor'
 import { useWeb3React } from '@web3-react/core'
 
 import { GET_POST } from '../../hooks/usePosts'
+import useAuth from '../../hooks/useAuth'
 import { useErrorReporting } from '../../hooks'
 import LoadingBackdrop from '../LoadingBackdrop'
 import Comment from './comment'
@@ -28,9 +31,13 @@ const CommentContainer = styled('div')({
   'margin-top': '20px'
 })
 
+const NewCommnet = styled(TextField)({
+  width: '100%'
+})
+
 const UPLOAD_COMMENT = gql`
-  mutation uploadComment($commentText: String!, $postTxId: String!, $communityTxId: String!, $ethAddr: String!, $timestamp: Int!) {
-    uploadComment(commentText: $commentText, postTxId: $postTxId, communityTxId: $communityTxId, ethAddr: $ethAddr, timestamp: $timestamp) {
+  mutation uploadComment($commentText: String!, $postTxId: String!, $communityTxId: String!, $timestamp: Int!) {
+    uploadComment(commentText: $commentText, postTxId: $postTxId, communityTxId: $communityTxId, timestamp: $timestamp) {
       postText
       timestamp
       user {
@@ -43,6 +50,7 @@ const UPLOAD_COMMENT = gql`
 const Comments = ({ comments, communityTxId, postTxId }) => {
   const [newComment, setNewComment] = useState('')
   const { active, account } = useWeb3React()
+  const { authToken } = useAuth()
   const [uploadCommentToDb, { error }] = useMutation(UPLOAD_COMMENT)
   const [isUploadLoading, setIsLoading] = useState(false)
   useErrorReporting(ERROR_TYPES.mutation, error, 'UPLOAD_COMMENT')
@@ -63,14 +71,24 @@ const Comments = ({ comments, communityTxId, postTxId }) => {
         postTxId: postTxId,
         communityTxId: communityTxId,
         timestamp: timestamp,
-        commentText: newComment,
-        ethAddr: account
+        commentText: newComment
+      },
+      context: {
+        headers: {
+          authorization: authToken
+        }
       },
       refetchQueries: [{
         query: GET_POST,
         variables: {
           txId: postTxId,
-          ethAddr: account
+          userToken: authToken
+        },
+        fetchPolicy: 'network-only',
+        context: {
+          headers: {
+            authorization: authToken
+          }
         }
       }]
     }
@@ -84,7 +102,7 @@ const Comments = ({ comments, communityTxId, postTxId }) => {
     <>
       <LoadingBackdrop isLoading={isUploadLoading} />
       <CommentsContainer>
-        { comments.map((comment, i) =>
+        {comments.map((comment, i) =>
           <CommentContainer key={i} >
             <Comment
               comment={comment}
@@ -95,18 +113,14 @@ const Comments = ({ comments, communityTxId, postTxId }) => {
       </CommentsContainer>
       { active &&
         <>
-          <Editor
-            headingsOffset={1}
-            placeholder='COMMENT'
-            defaultValue={newComment}
-            onSave={options => console.log('Save triggered', options)}
-            onCancel={() => console.log('Cancel triggered')}
-            onShowToast={message => { if (typeof window !== 'undefined') window.alert(message) }}
-            onChange={(value) => setNewComment(value)}
-            uploadImage={file => {
-              console.log('File upload triggered: ', file)
-            }}
-            autoFocus
+          <NewCommnet
+            variant='outlined'
+            multiline={true}
+            rows={3}
+            rowsMax={3}
+            value={newComment}
+            onChange={(event) => setNewComment(event?.target?.value)}
+            placeholder='Enter a comment'
           />
           <PostComment
             disableElevation

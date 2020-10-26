@@ -1,7 +1,12 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { styled } from '@material-ui/core/styles'
-import { Button } from '@material-ui/core'
+import { Close } from '@material-ui/icons'
+import {
+  Button,
+  Dialog,
+  IconButton
+} from '@material-ui/core'
 import htmlparse from 'html-react-parser'
 import {
   gql,
@@ -9,9 +14,10 @@ import {
 } from '@apollo/client'
 
 import Share from '../Share'
+import useAuth from '../../hooks/useAuth'
 import LoadingBackdrop from '../LoadingBackdrop'
 import Comments from '../Comments'
-import { GET_POSTS } from '../../hooks/usePosts'
+import { GET_POSTS, GET_POST } from '../../hooks/usePosts'
 import { useErrorReporting } from '../../hooks'
 import { ERROR_TYPES } from '../../constants'
 import PostContext from '../PostContext'
@@ -79,17 +85,128 @@ const StyledHr = styled('hr')({
   'background-color': '#c4c4c4'
 })
 
+const LikesAndComments = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  position: 'relative'
+})
+
+const CommentCount = styled('img')({
+  width: '40px',
+  height: '40px',
+  objectFit: 'contain'
+})
+
+const Confirm = styled(Button)({
+  marginRight: '10px'
+})
+
+const ModalContainer = styled(Dialog)({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center'
+})
+
+const ExitButton = styled(IconButton)({
+  width: '40px',
+  height: '40px',
+  padding: 0,
+  position: 'absolute',
+  top: '5px',
+  right: '5px'
+})
+
+const DeleteContainer = styled('div')({
+  padding: '15px',
+  marginTop: '15px',
+  'text-align': 'center'
+})
+
+const IncrLikesButton = styled(IconButton)({
+  margin: '0px',
+  zIndex: 1000,
+  '&:hover': {
+    background: 'none'
+  }
+})
+
+const Favorite = styled('img')({
+  width: '30px',
+  height: '30px',
+  objectFit: 'contain'
+})
+
+const SmallText = styled('p')({
+  fontSize: '12px',
+  fontWeight: '90'
+})
+
+const FavoriteCountContainer = styled('div')({
+  textAlign: 'center',
+  width: '40px',
+  position: 'absolute',
+  right: 27,
+  transform: 'translateX(-50%)'
+})
+
+const CommentCountContainer = styled('div')({
+  textAlign: 'center',
+  width: '40px',
+  position: 'absolute',
+  right: -20,
+  transform: 'translateX(-50%)'
+})
+
 const DELETE_POST = gql`
     mutation deletePost($txId: String!) {
       deletePost(txId: $txId)
     }
   `
 
+const INCREMENT_FAVORITES = gql`
+    mutation incrementFavorites($txId: String!) {
+      incrementFavorites(txId: $txId)
+    }
+`
+
+const ConfirmDelete = ({ isOpen, handleClose, handleDelete }) => {
+  return (
+    <ModalContainer
+      open={isOpen}
+      onClose={handleClose}
+    >
+      <DeleteContainer>
+        <ExitButton
+          onClick={handleClose}
+        >
+          <Close />
+        </ExitButton>
+        <p>
+          Are you sure you want to delete this post?
+        </p>
+        <Confirm
+          disableElevation
+          color='primary'
+          variant='contained'
+          onClick={handleDelete}
+        >
+          DELETE
+        </Confirm>
+      </DeleteContainer>
+    </ ModalContainer >
+  )
+}
+
 const Post = ({ post, comments }) => {
-  const { title, subtitle, postText, /* user, */ txId, community } = post
+  const { title, subtitle, postText, /* user, */ txId, community, favoriteCount, commentCount } = post
   const [isDeleting, setIsDeleting] = useState(false)
+  const [hasLiked, setHasLiked] = useState(false)
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
   const [deletePostFromDb, { error }] = useMutation(DELETE_POST)
+  const [incrementFavorites] = useMutation(INCREMENT_FAVORITES)
+  const { authToken } = useAuth()
   const router = useRouter()
+
   useErrorReporting(ERROR_TYPES.mutation, error, 'DELETE_POST')
   const isAuthor = () => {
     return true
@@ -115,8 +232,40 @@ const Post = ({ post, comments }) => {
     setIsDeleting(false)
   }
 
+  const incrFavorites = async () => {
+    setHasLiked(true)
+    await incrementFavorites({
+      variables: {
+        txId
+      },
+      context: {
+        headers: {
+          authorization: authToken
+        }
+      },
+      refetchQueries: [{
+        query: GET_POST,
+        variables: {
+          txId,
+          userToken: authToken
+        },
+        fetchPolicy: 'network-only',
+        context: {
+          headers: {
+            authorization: authToken
+          }
+        }
+      }]
+    })
+  }
+
   return (
     <PostContainer>
+      <ConfirmDelete
+        isOpen={isConfirmDeleteOpen}
+        handleClose={() => setIsConfirmDeleteOpen(false)}
+        handleDelete={handleDelete}
+      />
       <LoadingBackdrop isLoading={isDeleting} />
       { isAuthor() &&
         <AuthorActions>
@@ -127,7 +276,7 @@ const Post = ({ post, comments }) => {
             EDIT POST
           </ActionButton>
           <ActionButton
-            onClick={handleDelete}
+            onClick={() => setIsConfirmDeleteOpen(true)}
           >
             DELETE POST
           </ActionButton>
@@ -147,6 +296,22 @@ const Post = ({ post, comments }) => {
             communityName={post.community.name}
             timestamp={post.timestamp}
           />
+          <LikesAndComments>
+            { hasLiked ? (
+              <IncrLikesButton disabled={true}>
+                <Favorite src='../../posts/heartFilled.svg' />
+              </IncrLikesButton>
+            ) : (
+              <>
+                <IncrLikesButton
+                  onClick={incrFavorites}
+                >
+                  <Favorite src='../../posts/heart.svg' />
+                </IncrLikesButton> <FavoriteCountContainer> <SmallText> { favoriteCount } </SmallText> </FavoriteCountContainer>
+              </>
+            )}
+            <CommentCount src='../../posts/chatBubble.svg' /> <CommentCountContainer> <SmallText> { commentCount } </SmallText> </CommentCountContainer>
+          </LikesAndComments>
           <Share
             url={window.location.href}
             title={title}
@@ -160,13 +325,11 @@ const Post = ({ post, comments }) => {
         }
       </PostContent>
       <StyledHr />
-      {false &&
-        <Comments
-          comments={comments}
-          communityTxId={community.txId}
-          postTxId={txId}
-        />
-      }
+      <Comments
+        comments={comments}
+        communityTxId={community.txId}
+        postTxId={txId}
+      />
     </PostContainer>
   )
 }

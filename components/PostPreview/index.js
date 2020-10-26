@@ -1,6 +1,10 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 import { styled } from '@material-ui/core/styles'
+import {
+  FavoriteBorder,
+  ChatBubbleOutline
+} from '@material-ui/icons'
 import moment from 'moment'
 import LockOpenIcon from '@material-ui/icons/LockOpen'
 
@@ -52,6 +56,7 @@ const Context = styled('div')({
   position: 'absolute',
   bottom: '0',
   display: 'flex',
+  alignItems: 'center',
   '@media only screen and (max-width: 800px)': {
     position: 'static',
     'padding-top': '15px'
@@ -81,10 +86,48 @@ const StyledLock = styled(LockOpenIcon)({
   'margin-right': '10px'
 })
 
+const LikesAndComments = styled('div')({
+  display: 'flex',
+  alignItems: 'center'
+})
+
+const CommentCount = styled('img')({
+  width: '40px',
+  height: '40px',
+  objectFit: 'contain'
+})
+
+const FavoriteCount = styled('img')({
+  width: '30px',
+  height: '30px',
+  objectFit: 'contain'
+})
+
+const FavoriteCountContainer = styled('div')({
+  textAlign: 'center',
+  width: '40px',
+  position: 'absolute',
+  right: 15,
+  transform: 'translateX(-50%)'
+})
+
+const CommentCountContainer = styled('div')({
+  textAlign: 'center',
+  width: '40px',
+  position: 'absolute',
+  right: -20,
+  transform: 'translateX(-50%)'
+})
+
+const SmallText = styled('p')({
+  fontSize: '12px',
+  fontWeight: '90'
+})
+
 const DATE_FORMAT = 'MMMM D YYYY'
 
 const PostPreview = ({ post }) => {
-  const { title, subtitle, user, featuredImg, timestamp, community } = post
+  const { title, subtitle, user, featuredImg, timestamp, community, commentCount, favoriteCount } = post
   const router = useRouter()
 
   const handleRedirect = () => {
@@ -117,6 +160,10 @@ const PostPreview = ({ post }) => {
           <Date>
             {moment.unix(timestamp).format(DATE_FORMAT)}
           </Date>
+          <LikesAndComments>
+            <FavoriteCount src='posts/heart.svg' /> <FavoriteCountContainer> <SmallText> { favoriteCount } </SmallText> </FavoriteCountContainer>
+            <CommentCount src='posts/chatBubble.svg' /> <CommentCountContainer> <SmallText> { commentCount } </SmallText> </CommentCountContainer>
+          </LikesAndComments>
         </Context>
       </PostInfo>
       <Requirement>
