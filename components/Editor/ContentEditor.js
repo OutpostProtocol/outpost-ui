@@ -21,7 +21,8 @@ import FormattingToolbar, {
 } from './FormattingToolbar'
 import {
   registerCustomBlocks,
-  sanitizeYoutubeLink
+  getTweet,
+  getYoutubeVideo
 } from './CustomBlocks'
 
 registerCustomBlocks()
@@ -152,7 +153,7 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
     return new Promise((resolve, reject) => {
       input.onchange = async () => {
         const file = input.files[0]
-        const index = window.editor.getSelection(true).index
+        const index = window?.editor?.getSelection(true)?.index || 0
         if (isFeaturedImage) setIsFeaturedImageLoading(true)
         else {
           window.editor.insertEmbed(index, 'image', loadingImg)
@@ -170,25 +171,13 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
     })
   }
 
-  const getTweet = (url) => {
-    const matches = url.match(/(^|[^'"])(https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)[?]?(s=\d+)?)/)
-    if (matches) return matches[0]
-    return undefined
-  }
-
-  const getYoutubeVideo = (url) => {
-    const matches = url.match(/(http:|https:)?(\/\/)?(www\.)?(youtube.com|youtu.be)\/(watch|embed)?(\?v=|\/)?(\S+)?/)
-    if (matches) return sanitizeYoutubeLink(matches[0])
-    return undefined
-  }
-
   const getLineText = (index) => {
     const [blot] = window.editor.getLine(index)
     return blot.domNode?.innerText
   }
 
   const autoEmbed = () => {
-    const range = window.editor.getSelection(true)
+    const range = window?.editor.getSelection(true) || 0
     if (range?.index > 0 && window.editor) {
       const line = getLineText(range?.index - 1)
       const youtubeUrl = getYoutubeVideo(line)
@@ -206,7 +195,7 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
   }
 
   const uploadImage = async () => {
-    const range = window.editor.getSelection(true)
+    const range = window?.editor.getSelection(true) || 0
     const imgSrc = await handleImage(false)
     if (imgSrc) window.editor.insertEmbed(range?.index || 0, 'image', imgSrc)
   }

@@ -51,17 +51,17 @@ export const registerCustomBlocks = () => {
           if (!window.twttr) {
             loadScript('//platform.twitter.com/widgets.js').then(() => {
               setTimeout(() => {
-                window.twttr.widgets.load(document.getElementById('editor-container'))
+                window.twttr.widgets.load()
               }, 100)
             })
           } else {
             setTimeout(() => {
-              window.twttr.widgets.load(document.getElementById('editor-container'))
+              window.twttr.widgets.load()
             }, 100)
           }
         }
         return `
-          <div contenteditable="false" style="display: flex; margin: auto; width: 90%; max-width: 100%">
+          <div style="display: flex; justify-content: center; align-items: center;">
             <blockquote class="twitter-tweet blank-quote">
               <div id="temporary-loader" class="loader" />
               <a tabindex="-1" href="${data.url}"></a>
@@ -73,7 +73,6 @@ export const registerCustomBlocks = () => {
 
       const innerHTML = buildInnerHtml(data)
       node.innerHTML = innerHTML
-      node.setAttribute('contenteditable', false)
       node.setAttribute('data-url', data.url)
       return node
     }
@@ -110,4 +109,16 @@ export const sanitizeYoutubeLink = (url) => {
   const id = getYoutubeId(url)
   if (!id) return undefined
   return 'https://www.youtube.com/embed/' + id
+}
+
+export const getTweet = (url) => {
+  const matches = url.match(/(^|[^'"])(https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)[?]?(s=\d+)?)/)
+  if (matches) return matches[0]
+  return undefined
+}
+
+export const getYoutubeVideo = (url) => {
+  const matches = url.match(/(http:|https:)?(\/\/)?(www\.)?(youtube.com|youtu.be)\/(watch|embed)?(\?v=|\/)?(\S+)?/)
+  if (matches) return sanitizeYoutubeLink(matches[0])
+  return undefined
 }
