@@ -26,8 +26,11 @@ function SEO ({ canonical, description, lang, meta, title, image }) {
     image: image || siteData.image
   }
 
+  const twitterSummaryType = image ? 'summary_large_image' : 'summary'
+
   return (
     <Head>
+      <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0,viewport-fit=cover" />
       <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
       <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
       <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -41,9 +44,10 @@ function SEO ({ canonical, description, lang, meta, title, image }) {
       <meta name='og:image' content={metaData.image} />
       <meta name='og:description' content={metaData.description} />
       <meta name='og:type' content='website' />
-      <meta name='twitter:card' content='summary' />
+      <meta name='twitter:card' content={twitterSummaryType} />
       <meta name='twitter:title' content={metaData.title} />
       <meta name='twitter:description' content={metaData.description} />
+      <meta name='twitter:image' content={metaData.image} />
     </Head>
   )
 }
