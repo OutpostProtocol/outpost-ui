@@ -1,12 +1,14 @@
-import React from 'react';
-import Document, { Html, Head, Main, NextScript } from 'next/document';
-import { ServerStyleSheets } from '@material-ui/core/styles';
+import React from 'react'
+import Document, {
+  Html, Head, Main, NextScript
+} from 'next/document'
+import { ServerStyleSheets } from '@material-ui/core/styles'
 import theme from '../styles/theme'
 
 const GA_TRACKING_ID = 'UA-180300258-1'
 
 export default class MyDocument extends Document {
-  render() {
+  render () {
     const { isProduction } = this.props
 
     return (
@@ -35,7 +37,7 @@ export default class MyDocument extends Document {
                     gtag('config', '${GA_TRACKING_ID}', {
                       page_path: window.location.pathname,
                     });
-                  `,
+                  `
                 }}
               />
             </>
@@ -46,24 +48,23 @@ export default class MyDocument extends Document {
           <NextScript />
         </body>
       </Html>
-    );
+    )
   }
 }
 
 // `getInitialProps` belongs to `_document` (instead of `_app`),
 // it's compatible with server-side generation (SSG).
 MyDocument.getInitialProps = async (ctx) => {
-
   // Render app and page and get the context of the page with collected side effects.
-  const sheets = new ServerStyleSheets();
-  const originalRenderPage = ctx.renderPage;
+  const sheets = new ServerStyleSheets()
+  const originalRenderPage = ctx.renderPage
 
   ctx.renderPage = () =>
     originalRenderPage({
-      enhanceApp: (App) => (props) => sheets.collect(<App {...props} />),
-    });
+      enhanceApp: (App) => (props) => sheets.collect(<App {...props} />)
+    })
 
-  const initialProps = await Document.getInitialProps(ctx);
+  const initialProps = await Document.getInitialProps(ctx)
 
   // Check if in production
   const isProduction = process.env.NODE_ENV === 'production'

@@ -40,9 +40,9 @@ const getLibrary = (provider, connector) => {
 
 function OutpostApp ({ Component, pageProps }) {
   useEffect(() => {
-    const jssStyles = document.querySelector('#jss-server-side');
+    const jssStyles = document.querySelector('#jss-server-side')
     if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
+      jssStyles.parentElement.removeChild(jssStyles)
     }
   }, [])
 

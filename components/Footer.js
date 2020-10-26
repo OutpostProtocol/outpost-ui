@@ -1,13 +1,13 @@
 import React from 'react'
 import { styled } from '@material-ui/core/styles'
-import { SvgIcon, Button } from '@material-ui/core'
+import { Button } from '@material-ui/core'
 
 import { icons } from '../constants/outpost-share'
 
 const Container = styled('div')({
   height: '10vh',
   width: '100%',
-  'margin': '10vh 0',
+  margin: '10vh 0',
   display: 'flex',
   'justify-content': 'center',
   'align-items': 'center'
@@ -26,11 +26,6 @@ const DiscordLink = styled('a')({
 
 const IconContainer = styled('a')({
   margin: '10px 30px'
-})
-
-const IconImage = styled('img')({
-  height: '32px',
-  width: '32px'
 })
 
 const Footer = () => {

@@ -73,7 +73,7 @@ const MaxWidthContainer = styled('div')({
   display: 'flex',
   'justify-content': 'space-between',
   'max-width': '1500px',
-  'width': '100%'
+  width: '100%'
 })
 
 const ImageContainer = styled('div')({

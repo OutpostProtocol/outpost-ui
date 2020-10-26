@@ -4,7 +4,6 @@ import React, {
 } from 'react'
 import { useRouter } from 'next/router'
 import { styled } from '@material-ui/core/styles'
-import { useWeb3React } from '@web3-react/core'
 import showdown from 'showdown'
 import {
   gql,
@@ -12,24 +11,20 @@ import {
 } from '@apollo/client'
 import dynamic from 'next/dynamic'
 
+import { mutations } from '../graphql'
+import { useAccountRoles } from '../context/Role'
 import useAuth from '../hooks/useAuth'
 import Toolbar from '../components/Toolbar'
 import {
   useOnePost,
   GET_POSTS
 } from '../hooks/usePosts'
-import { isValidURL } from '../utils'
 import LoadingBackdrop from '../components/LoadingBackdrop'
 import SEO from '../components/seo'
-import CommunitySelector from '../components/CommunitySelector'
-import {
-  PLACEHOLDER_COMMUNITY,
-  ERROR_TYPES
-} from '../constants'
+import { PLACEHOLDER_COMMUNITY } from '../constants'
+import CommunitySelector from '../components/Editor/CommunitySelector'
 import PostActions from '../components/Editor/PostActions'
 import EditorPreview from '../components/Editor/EditorPreview'
-
-import { mutations } from '../graphql';
 
 const ContentEditor = dynamic(import('../components/Editor/ContentEditor'), { ssr: false, loading: () => <LoadingBackdrop isLoading={true} /> })
 
@@ -45,10 +40,6 @@ const PreviewContainer = styled('div')({
   'margin-top': '30px'
 })
 
-const WarningText = styled('div')({
-  color: '#FF5252'
-})
-
 const UPLOAD_POST = gql(mutations.uploadPost)
 
 const EditorPage = () => {
@@ -56,20 +47,16 @@ const EditorPage = () => {
   const router = useRouter()
   const { postData, loading } = useOnePost(router.query?.txId, authToken)
   const isEditingMode = router.query?.txId !== undefined
-  const placeholderCommunity = PLACEHOLDER_COMMUNITY
-
-  const { account } = useWeb3React()
+  const roles = useAccountRoles()
+  const [activeCommunity, setActiveCommunity] = useState(PLACEHOLDER_COMMUNITY)
+  const [communities, setCommunities] = useState([])
   const [title, setTitle] = useState('')
   const [featuredImage, setFeaturedImage] = useState(undefined)
   const [subtitle, setSubtitle] = useState('')
   const [postText, setPostText] = useState('')
-  const [communityId, setCommunityId] = useState(placeholderCommunity.txId)
   const [isWaitingForUpload, setIsWaiting] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
-  const [hasCanonicalLink, setHasLink] = useState(false)
-  const [canonicalLink, setCanonicalLink] = useState('')
-  const [slug, setSlug] = useState('')
-  const [uploadPostToDb, { error }] = useMutation(UPLOAD_POST, {
+  const [uploadPostToDb] = useMutation(UPLOAD_POST, {
     context: {
       headers: {
         authorization: authToken
@@ -82,6 +69,7 @@ const EditorPage = () => {
       }
     },
     onCompleted: (res) => {
+      const slug = activeCommunity.slug
       if (slug && res?.uploadPost?.txId) router.push(`/${slug}/post/${res.uploadPost.txId}`)
       else router.push('/')
     }
@@ -94,16 +82,21 @@ const EditorPage = () => {
       setSubtitle(post.subtitle)
       setFeaturedImage(post.featuredImg)
       setPostText(post.postText)
-      setSlug(post.community?.slug)
+      setActiveCommunity(post.community)
+    } else if (Array.isArray(communities) && communities.length === 1) {
+      const [community] = communities
+      setActiveCommunity(community)
     }
-  }, [postData, loading])
+  }, [postData, loading, communities, setActiveCommunity])
 
-  const handleCommunitySelection = (community) => {
-    if (community) {
-      setSlug(community.slug)
-      setCommunityId(community.txId)
-    }
-  }
+  useEffect(() => {
+    const coms = {}
+    roles.forEach(r => {
+      coms[r.community.name] = r.community
+    })
+
+    setCommunities(Object.values(coms))
+  }, [roles])
 
   const handlePost = async () => {
     if (!isValidPost) return
@@ -114,7 +107,7 @@ const EditorPage = () => {
       title: title,
       subtitle: subtitle,
       postText: parsedPost,
-      canonicalLink: canonicalLink,
+      canonicalLink: null,
       parentTxId: router.query?.txId,
       timestamp: timestamp,
       featuredImg: featuredImage
@@ -126,12 +119,12 @@ const EditorPage = () => {
   }
 
   const handleUpload = async (postUpload) => {
-    const com = postData?.post?.community?.txId || communityId
+    const comTxId = postData?.post?.community?.txId || activeCommunity.txId
 
     const options = {
       variables: {
         postUpload: postUpload,
-        communityTxId: postData?.post?.community?.txId || communityId
+        communityTxId: comTxId
       },
       refetchQueries: [{ query: GET_POSTS }]
     }
@@ -146,10 +139,7 @@ const EditorPage = () => {
     } else if (title === '') {
       alert('You must create a title for your post')
       return false
-    } else if (hasCanonicalLink && !isValidURL(canonicalLink)) {
-      alert('Either disable the canonical link or enter a valid URL [https://www.example.com]')
-      return false
-    } else if (communityId === '' || communityId === PLACEHOLDER_COMMUNITY.txId) {
+    } else if (activeCommunity.txId === PLACEHOLDER_COMMUNITY.txId) {
       alert('Select a publication')
       return false
     } else if (subtitle === '') {
@@ -189,8 +179,10 @@ const EditorPage = () => {
         <PreviewContainer>
           { !(postData?.post?.community?.txId) &&
           <CommunitySelector
-            handleSelection={handleCommunitySelection}
-            placeHolder={placeholderCommunity}
+            setActiveCommunity={setActiveCommunity}
+            activeCommunity={activeCommunity}
+            communities={communities}
+            placeHolder={PLACEHOLDER_COMMUNITY}
             disabled={isEditingMode}
           />
           }

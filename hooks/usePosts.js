@@ -56,8 +56,8 @@ const usePosts = (communityTxId) => {
 }
 
 export const useOnePost = (txId, userToken) => {
-  if (!txId) return false
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  if (!txId) return { postData: null }
+
   const [postData, setPostData] = useState()
   const [loading, setLoading] = useState(true)
   const { data, error, refetch } = useQuery(GET_POST, {

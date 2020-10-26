@@ -1,12 +1,11 @@
 import React, {
-  createContext, useReducer, useCallback,
-  useEffect, useState, useContext
+  createContext, useEffect, useState, useContext
 } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { useLazyQuery, gql } from '@apollo/client'
 import useAuth from '../hooks/useAuth'
 
-import { queries } from '../graphql';
+import { queries } from '../graphql'
 
 export const RoleContext = createContext({
   roles: []
@@ -19,8 +18,8 @@ export const useAccountRoles = () => {
 export function RoleProvider ({ children }) {
   const [curAccount, setCurAccount] = useState(null)
   const { account } = useWeb3React()
-  const { authToken, fetchToken } = useAuth()
-  const [fetchRoles, { loading, data, called, refetch, error }] = useLazyQuery(ROLE_QUERY, {
+  const { authToken } = useAuth()
+  const [fetchRoles, { data, called, refetch, error }] = useLazyQuery(ROLE_QUERY, {
     context: {
       headers: {
         authorization: authToken
@@ -38,19 +37,19 @@ export function RoleProvider ({ children }) {
       }
       setCurAccount(account)
     }
-  }, [account, account, curAccount, called, refetch, fetchRoles])
+  }, [account, curAccount, called, refetch, fetchRoles])
 
   useEffect(() => {
     if (error) {
       refetch()
     }
-  }, [error])
+  }, [error, refetch])
 
   useEffect(() => {
     if (data) {
       setRoles(data.userRoles)
     }
-  }, [data])
+  }, [data, setRoles])
 
   return (
     <RoleContext.Provider value={roles}>
