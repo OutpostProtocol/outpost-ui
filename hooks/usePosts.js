@@ -31,8 +31,8 @@ export const GET_POSTS = gql`
   `
 
 export const GET_POST = gql`
-  query getPost($txId: String!, $userToken: String!) {
-    getPost(txId: $txId, userToken: $userToken) {
+  query getPost($txId: String!) {
+    getPost(txId: $txId) {
       post {
         id
         title
@@ -133,8 +133,7 @@ export const useOnePost = (txId, userToken) => {
   const [loading, setLoading] = useState(true)
   const { data, error, refetch } = useQuery(GET_POST, {
     variables: {
-      txId,
-      userToken
+      txId
     },
     fetchPolicy: 'network-only',
     context: {

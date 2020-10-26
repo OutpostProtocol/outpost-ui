@@ -48,8 +48,8 @@ const WarningText = styled('div')({
 })
 
 const UPLOAD_POST = gql`
-  mutation UploadPost($postUpload: PostUpload!, $ethAddr: String!, $communityTxId: String!) {
-    uploadPost(postUpload: $postUpload, ethAddr: $ethAddr, communityTxId: $communityTxId) {
+  mutation UploadPost($postUpload: PostUpload!, $communityTxId: String!) {
+    uploadPost(postUpload: $postUpload, communityTxId: $communityTxId) {
       txId
       title
       postText
@@ -106,7 +106,7 @@ const EditorPage = () => {
   }
 
   const handlePost = async () => {
-    if (!isValidPost) return
+    if (!isValidPost()) return
     setIsWaiting(true)
     const parsedPost = converter.makeHtml(postText.replace(/\\/g, '<br/>'))
     const timestamp = postData?.timestamp || Math.floor(Date.now() / 1000)
@@ -129,12 +129,15 @@ const EditorPage = () => {
     const options = {
       variables: {
         postUpload: postUpload,
-        ethAddr: account,
         communityTxId: postData?.post?.community?.txId || communityId
+      },
+      context: {
+        headers: {
+          authorization: authToken
+        }
       },
       refetchQueries: [{ query: GET_POSTS }]
     }
-
     const res = await uploadPostToDb(options)
     if (slug && res?.data?.uploadPost?.txId) router.push(`/${slug}/post/${res.data.uploadPost.txId}`)
     else router.push('/')
