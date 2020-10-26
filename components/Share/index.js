@@ -15,8 +15,9 @@ const BUTTON_SIZE = 30
 
 const Container = styled('div')({
   'margin-top': '15px',
-  '@media only screen and (max-width: 1000px)': {
-    display: 'none'
+  display: 'none',
+  '@media only screen and (min-width: 1000px)': {
+    display: 'block'
   }
 })
 

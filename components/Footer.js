@@ -15,7 +15,11 @@ const Container = styled('div')({
 
 const CreateOutpost = styled(Button)({
   height: '2.6em',
-  'border-radius': '4px'
+  'border-radius': '4px',
+  display: 'none',
+  '@media only screen and (min-width: 420px)': {
+    display: 'block'
+  }
 })
 
 const DiscordLink = styled('a')({

@@ -53,16 +53,7 @@ function OutpostApp ({ Component, pageProps }) {
           <Web3ReactProvider getLibrary={getLibrary}>
             <AuthProvider >
               <RoleProvider>
-                <main
-                  style={{
-                    height: '100vh',
-                    width: '100vw',
-                    top: '0',
-                    left: '0'
-                  }}
-                >
-                  <Component {...pageProps} />
-                </main>
+                <Component {...pageProps} />
               </RoleProvider>
             </AuthProvider>
           </Web3ReactProvider>

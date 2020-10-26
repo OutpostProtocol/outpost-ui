@@ -27,15 +27,16 @@ const PostContainer = styled('div')({
 
 const IframeContainer = styled('div')({
   margin: '3em auto',
-  width: '80%',
+  'flex-direction': 'column',
+  width: '95%',
   display: 'flex',
   'justify-content': 'space-between',
   'align-items': 'center',
   'font-size': '30px',
   'text-align': 'center',
-  '@media only screen and (max-width: 800px)': {
-    'flex-direction': 'column',
-    width: '95%'
+  '@media only screen and (min-width: 800px)': {
+    'flex-direction': 'row',
+    width: '80%'
   }
 })
 
@@ -45,9 +46,9 @@ const StyledIFrame = styled(Iframe)({
 
 const MessageContainer = styled('div')({
   padding: '0.5em',
-  'max-width': '30%',
-  '@media only screen and (max-width: 800px)': {
-    'max-width': '100vw'
+  'max-width': '100vw',
+  '@media only screen and (min-width: 800px)': {
+    'max-width': '30%'
   }
 })
 

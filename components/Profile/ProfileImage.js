@@ -6,10 +6,8 @@ import { use3boxProf } from '../../hooks/use3boxProf'
 const Avatar = styled('img')({
   'border-radius': '50%',
   'margin-right': '10px',
-  '@media only screen and (max-width: 700px)': {
-    width: '30px',
-    height: '30px'
-  },
+  width: '30px',
+  height: '30px',
   '@media only screen and (min-width: 700px)': {
     width: '40px',
     height: '40px'

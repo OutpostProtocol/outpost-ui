@@ -17,9 +17,9 @@ const Container = styled('div')({
 })
 
 const Body = styled('div')({
-  margin: '10vh',
-  '@media only screen and (max-width: 800px)': {
-    margin: '10vh 10px'
+  margin: '10vh 10px',
+  '@media only screen and (min-width: 800px)': {
+    margin: '10vh'
   }
 })
 
@@ -57,23 +57,25 @@ const Discover = styled('div')({
 
 const ComContainer = styled('div')({
   display: 'flex',
-  padding: '10px 100px',
   'border-radius': '4px',
+  'flex-direction': 'column',
+  padding: '20px',
   margin: '10px',
   '&:hover': {
     'background-color': '#fafafa',
     cursor: 'pointer'
   },
-  '@media only screen and (max-width: 800px)': {
-    'flex-direction': 'column',
-    padding: '20px'
+  '@media only screen and (min-width: 800px)': {
+    padding: '10px 100px',
+    'flex-direction': 'row'
   }
 })
 
 const ComImgContainer = styled('div')({
-  '@media only screen and (max-width: 800px)': {
-    display: 'flex',
-    'justify-content': 'center'
+  display: 'flex',
+  'justify-content': 'center',
+  '@media only screen and (min-width: 800px)': {
+    display: 'block'
   }
 })
 
@@ -84,13 +86,13 @@ const ComImg = styled('img')({
 })
 
 const ComInfo = styled('div')({
-  'margin-left': '20px',
+  'margin-top': '10px',
   display: 'flex',
   'flex-direction': 'column',
   'justify-content': 'space-around',
-  '@media only screen and (max-width: 800px)': {
-    'margin-left': 0,
-    'margin-top': '10px'
+  '@media only screen and (min-width: 800px)': {
+    'margin-left': '20px',
+    'margin-top': 0
   }
 })
 

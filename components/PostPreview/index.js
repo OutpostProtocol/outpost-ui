@@ -16,8 +16,9 @@ const PostContainer = styled('div')({
   position: 'relative',
   margin: '10px 0',
   'min-height': '140px',
-  '@media only screen and (max-width: 800px)': {
-    'flex-direction': 'column'
+  'flex-direction': 'column',
+  '@media only screen and (min-width: 800px)': {
+    'flex-direction': 'row'
   }
 })
 
@@ -49,12 +50,13 @@ const Title = styled('h3')({
 const Subtitle = styled('div')({})
 
 const Context = styled('div')({
-  position: 'absolute',
+  position: 'static',
   bottom: '0',
+  'padding-top': '15px',
   display: 'flex',
-  '@media only screen and (max-width: 800px)': {
-    position: 'static',
-    'padding-top': '15px'
+  '@media only screen and (min-width: 800px)': {
+    position: 'absolute',
+    'padding-top': 0
   }
 })
 

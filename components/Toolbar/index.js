@@ -96,8 +96,9 @@ const CurCommunity = styled('div')({
 const CommunityName = styled('h1')({
   'font-size': '1.25em',
   'margin-left': '10px',
-  '@media only screen and (max-width: 400px)': {
-    display: 'none'
+  display: 'none',
+  '@media only screen and (min-width: 400px)': {
+    display: 'block'
   }
 })
 

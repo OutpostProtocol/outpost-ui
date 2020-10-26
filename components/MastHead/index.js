@@ -7,11 +7,11 @@ import { useCommunity } from '../../context/Community'
 
 const Container = styled('div')({
   'background-color': '#F2F2F2',
-  width: '70vw',
+  width: '100%',
   margin: '80px auto 0',
   'min-height': '220px',
-  '@media only screen and (max-width: 800px)': {
-    width: '100%'
+  '@media only screen and (min-width: 800px)': {
+    width: '70vw'
   },
   'max-width': '1000px'
 })
@@ -20,9 +20,10 @@ const PaddingContainer = styled('div')({
   padding: '25px',
   display: 'flex',
   'justify-content': 'space-between',
-  '@media only screen and (max-width: 800px)': {
-    'flex-direction': 'column',
-    'align-items': 'center'
+  'flex-direction': 'column',
+  'align-items': 'center',
+  '@media only screen and (min-width: 800px)': {
+    'flex-direction': 'row'
   }
 })
 
@@ -79,11 +80,12 @@ const FrameWrapper = styled('div')({
   display: 'flex',
   'justify-content': 'center',
   'align-items': 'center',
+  'padding-top': '20px',
   '&:hover': {
     cursor: 'pointer'
   },
-  '@media screen and (max-width: 440px)': {
-    'padding-top': '20px'
+  '@media screen and (min-width: 440px)': {
+    'padding-top': 0
   }
 })
 
