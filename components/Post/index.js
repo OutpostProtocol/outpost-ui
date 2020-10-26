@@ -88,7 +88,9 @@ const StyledHr = styled('hr')({
 const LikesAndComments = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  position: 'relative'
+  position: 'relative',
+  marginLeft: 'auto',
+  marginRight: '10px'
 })
 
 const CommentCount = styled('img')({
