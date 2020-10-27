@@ -173,7 +173,7 @@ const EditorPage = () => {
   }
 
   const isCommunitySelected = () => {
-    return postData?.post?.community?.txId || communityId !== placeholderCommunity.txId
+    return !(postData?.post?.community?.txId) && communityId !== placeholderCommunity.txId
   }
 
   return (

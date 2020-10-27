@@ -7,14 +7,14 @@ const Text = styled('h4')({
 })
 
 const FormTextField = styled(Input)({
-  width: '70px',
-  'border-radius': '4px',
-  fontWeight: 300
+  borderRadius: '4px',
+  marginLeft: '3px',
+  fontWeight: 300,
+  width: '55px'
 })
 
 const Symbol = styled('h4')({
-  marginRight: '3px',
-  marginLeft: '10px',
+  marginLeft: '3px',
   fontWeight: 300
 })
 
@@ -31,17 +31,15 @@ interface Props {
 }
 
 const ReadRequirement = ({ tokenSymbol, readRequirement, setReadRequirement }: Props) => {
-  const symbol = '$'.concat(tokenSymbol) || '$'
+  const symbol = ' $'.concat(tokenSymbol) || ' $'
   return (
     <Container>
       <Text>
         Read Requirement:
       </Text>
-      <Symbol>
-        { symbol }
-      </Symbol>
       <FormTextField
-        value={ '' + readRequirement }
+        value={ readRequirement }
+        fullWidth={false}
         placeholder = '0'
         disableUnderline={true}
         onChange = {(event) => {
@@ -51,7 +49,11 @@ const ReadRequirement = ({ tokenSymbol, readRequirement, setReadRequirement }: P
             setReadRequirement(value)
           }
         }}
+        inputProps={{ style: { textAlign: 'right' } }}
       />
+      <Symbol>
+        { symbol }
+      </Symbol>
     </ Container>
   )
 }
