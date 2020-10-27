@@ -98,6 +98,7 @@ const EditorPage = () => {
       setFeaturedImage(post.featuredImg)
       setPostText(post.postText)
       setSlug(post.community?.slug)
+      setCommunityId(post.community?.txId)
     }
   }, [postData, loading])
 
