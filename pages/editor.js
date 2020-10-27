@@ -109,6 +109,9 @@ const EditorPage = () => {
     }
   }
 
+  let parsedReadRequirement = Number(readRequirement)
+  if (Number.isNaN(parsedReadRequirement)) parsedReadRequirement = undefined
+
   const handlePost = async () => {
     if (!isValidPost()) return
     setIsWaiting(true)
@@ -122,7 +125,7 @@ const EditorPage = () => {
       parentTxId: router.query?.txId,
       timestamp: timestamp,
       featuredImg: featuredImage,
-      readRequirement: Number(readRequirement)
+      readRequirement: parsedReadRequirement
     }
 
     await handleUpload(postUpload)
