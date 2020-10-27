@@ -127,8 +127,9 @@ const SmallText = styled('p')({
 const DATE_FORMAT = 'MMMM D YYYY'
 
 const PostPreview = ({ post }) => {
-  const { title, subtitle, user, featuredImg, timestamp, community, commentCount, favoriteCount } = post
+  const { title, subtitle, user, featuredImg, timestamp, community, commentCount, favoriteCount, readRequirement: postReadRequirement } = post
   const router = useRouter()
+  const readRequirement = postReadRequirement || community.readRequirement
 
   const handleRedirect = () => {
     const url = `/${router.query.comSlug}/post/${post.txId}`
@@ -168,7 +169,7 @@ const PostPreview = ({ post }) => {
       </PostInfo>
       <Requirement>
         <StyledLock />
-        REQUIRES {community.readRequirement} ${community.tokenSymbol}
+        REQUIRES {readRequirement} ${community.tokenSymbol}
       </Requirement>
     </PostContainer>
   )

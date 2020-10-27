@@ -51,6 +51,7 @@ const ROLE_QUERY = gql`
         txId
         name
         slug
+        tokenSymbol
       }
     }
   }

@@ -18,6 +18,7 @@ export const GET_POSTS = gql`
       featuredImg
       commentCount
       favoriteCount
+      readRequirement
       community {
         name
         readRequirement

@@ -28,6 +28,7 @@ import {
 } from '../constants'
 import PostActions from '../components/Editor/PostActions'
 import EditorPreview from '../components/Editor/EditorPreview'
+import ReadRequirement from '../components/Editor/ReadRequirement'
 
 const ContentEditor = dynamic(import('../components/Editor/ContentEditor'), { ssr: false, loading: () => <LoadingBackdrop isLoading={true} /> })
 
@@ -39,8 +40,9 @@ const EditorContainer = styled('div')({
 })
 
 const PreviewContainer = styled('div')({
-  height: '3em',
-  'margin-top': '30px'
+  display: 'flex',
+  alignItems: 'flex-end',
+  marginTop: '30px'
 })
 
 const WarningText = styled('div')({
@@ -80,6 +82,8 @@ const EditorPage = () => {
   const [postText, setPostText] = useState('')
   const [communityId, setCommunityId] = useState(placeholderCommunity.txId)
   const [canonicalLink, setCanonicalLink] = useState('')
+  const [readRequirement, setReadRequirement] = useState('')
+  const [tokenSymbol, setTokenSymbol] = useState('')
   const [slug, setSlug] = useState('')
   const [isWaitingForUpload, setIsWaiting] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
@@ -100,8 +104,8 @@ const EditorPage = () => {
   const handleCommunitySelection = (event) => {
     if (event?.target?.value) {
       setSlug(event.target.value.slug)
+      setTokenSymbol(event.target.value.tokenSymbol || '')
       setCommunityId(event.target.value.txId)
-      console.log(event.target.value, 'THE VALUE OF THE TARGET')
     }
   }
 
@@ -117,7 +121,8 @@ const EditorPage = () => {
       canonicalLink: canonicalLink,
       parentTxId: router.query?.txId,
       timestamp: timestamp,
-      featuredImg: featuredImage
+      featuredImg: featuredImage,
+      readRequirement: Number(readRequirement)
     }
 
     await handleUpload(postUpload)
@@ -164,6 +169,10 @@ const EditorPage = () => {
     return true
   }
 
+  const isCommunitySelected = () => {
+    return postData?.post?.community?.txId || communityId !== placeholderCommunity.txId
+  }
+
   return (
     <>
       <Toolbar />
@@ -196,6 +205,13 @@ const EditorPage = () => {
             handleSelection={handleCommunitySelection}
             placeHolder={placeholderCommunity}
             disabled={isEditingMode}
+          />
+          }
+          { isCommunitySelected() &&
+          <ReadRequirement
+            tokenSymbol={tokenSymbol}
+            readRequirement={readRequirement}
+            setReadRequirement={setReadRequirement}
           />
           }
           <PostActions
