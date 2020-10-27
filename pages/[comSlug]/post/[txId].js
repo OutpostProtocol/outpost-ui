@@ -134,6 +134,7 @@ const LoggedInPost = ({ backPath, txId }) => {
   const { authToken, fetchToken } = useAuth()
   const [refetchedCalled, setRefetchCalled] = useState(false)
   const { postData, loading, error, refetch } = useOnePost(txId, authToken)
+  const { account } = useWeb3React()
 
   useEffect(() => {
     const handleRefetch = async () => {
@@ -156,10 +157,11 @@ const LoggedInPost = ({ backPath, txId }) => {
     )
   }
 
-  const { userBalance, readRequirement, tokenSymbol, tokenAddress } = postData
-
+  const { userBalance, readRequirement, tokenSymbol, tokenAddress, post, comments } = postData
+  const isAuthor = post.user.address.toLowerCase() === account.toLowerCase()
   const hasInsufficientBalance = readRequirement && userBalance < readRequirement
-  if (hasInsufficientBalance) {
+
+  if (hasInsufficientBalance && !isAuthor) {
     return (
       <IframeContainer>
         <MessageContainer>
@@ -186,8 +188,6 @@ const LoggedInPost = ({ backPath, txId }) => {
     )
   }
 
-  const post = postData.post
-  const comments = postData.comments
   return (
     <PostContainer>
       <Post
