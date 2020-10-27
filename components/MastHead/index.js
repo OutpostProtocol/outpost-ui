@@ -23,7 +23,8 @@ const PaddingContainer = styled('div')({
   'flex-direction': 'column',
   'align-items': 'center',
   '@media only screen and (min-width: 800px)': {
-    'flex-direction': 'row'
+    'flex-direction': 'row',
+    'align-items': 'stretch'
   }
 })
 
