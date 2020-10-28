@@ -1,12 +1,11 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 import { styled } from '@material-ui/core/styles'
-import {
-  FavoriteBorder,
-  ChatBubbleOutline
-} from '@material-ui/icons'
 import moment from 'moment'
-import LockOpenIcon from '@material-ui/icons/LockOpen'
+import {
+  LockOpen,
+  Lock
+} from '@material-ui/icons'
 
 const PostContainer = styled('div')({
   padding: '10px',
@@ -80,7 +79,13 @@ const Requirement = styled('div')({
   'font-size': '0.75em'
 })
 
-const StyledLock = styled(LockOpenIcon)({
+const StyledLockClosed = styled(Lock)({
+  position: 'relative',
+  top: '5px',
+  'margin-right': '10px'
+})
+
+const StyledLockOpen = styled(LockOpen)({
   position: 'relative',
   top: '5px',
   'margin-right': '10px'
@@ -126,7 +131,7 @@ const SmallText = styled('p')({
 
 const DATE_FORMAT = 'MMMM D YYYY'
 
-const PostPreview = ({ post }) => {
+const PostPreview = ({ post, userBalance }) => {
   const { title, subtitle, user, featuredImg, timestamp, community, commentCount, favoriteCount, readRequirement: postReadRequirement } = post
   const router = useRouter()
   const readRequirement = postReadRequirement || community.readRequirement
@@ -168,7 +173,9 @@ const PostPreview = ({ post }) => {
         </Context>
       </PostInfo>
       <Requirement>
-        <StyledLock />
+        { readRequirement > userBalance
+          ? <StyledLockClosed /> : <StyledLockOpen />
+        }
         REQUIRES {readRequirement} ${community.tokenSymbol}
       </Requirement>
     </PostContainer>

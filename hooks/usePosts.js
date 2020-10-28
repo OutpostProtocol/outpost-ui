@@ -8,25 +8,28 @@ import { ERROR_TYPES } from '../constants'
 import { useRouter } from 'next/router'
 
 export const GET_POSTS = gql`
-  query posts($slug: String) {
-    posts (communitySlug: $slug) {
-      id
-      title
-      subtitle
-      timestamp
-      txId
-      featuredImg
-      commentCount
-      favoriteCount
-      readRequirement
-      community {
-        name
+  query posts($slug: String, $address: String) {
+    posts (communitySlug: $slug, address: $address) {
+      posts {
+        id
+        title
+        subtitle
+        timestamp
+        txId
+        featuredImg
+        commentCount
+        favoriteCount
         readRequirement
-        tokenSymbol
+        community {
+          name
+          readRequirement
+          tokenSymbol
+        }
+        user {
+          name
+        }
       }
-      user {
-        name
-      }
+      userBalance
     }
   }
   `
@@ -115,12 +118,12 @@ export const usePostPreview = (txId) => {
   }
 }
 
-const usePosts = (communityTxId) => {
+const usePosts = (address) => {
   const router = useRouter()
   const slug = router.query.comSlug
 
   const result = useQuery(GET_POSTS, {
-    variables: { slug }
+    variables: { slug, address }
   })
 
   useErrorReporting(ERROR_TYPES.query, result?.error, 'GET_POSTS')

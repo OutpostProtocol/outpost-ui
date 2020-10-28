@@ -4,6 +4,7 @@ import { styled } from '@material-ui/core/styles'
 
 import PostPreview from '../PostPreview'
 import usePosts from '../../hooks/usePosts'
+import { useWeb3React } from '@web3-react/core'
 
 const ProgressContainer = styled('div')({
   display: 'flex',
@@ -12,7 +13,8 @@ const ProgressContainer = styled('div')({
 })
 
 const Feed = () => {
-  const { data, loading } = usePosts()
+  const { account } = useWeb3React()
+  const { data, loading } = usePosts(account)
 
   if (loading) {
     return (
@@ -22,7 +24,7 @@ const Feed = () => {
     )
   }
 
-  const { posts } = data || []
+  const { posts, userBalance } = data?.posts || []
 
   return (
     <>
@@ -30,6 +32,7 @@ const Feed = () => {
         return (
           <PostPreview
             post={post}
+            userBalance={userBalance}
             key={i}
           />
         )
