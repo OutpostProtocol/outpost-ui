@@ -21,6 +21,8 @@ import { GET_POSTS, GET_POST } from '../../hooks/usePosts'
 import { useErrorReporting } from '../../hooks'
 import { ERROR_TYPES } from '../../constants'
 import PostContext from '../PostContext'
+import { useCommunity } from '../../context/Community'
+import ReadRequirement from '../ReadRequirement/index.tsx'
 
 const PostContainer = styled('div')({
   padding: '10px',
@@ -100,7 +102,8 @@ const CommentCount = styled('img')({
 })
 
 const Confirm = styled(Button)({
-  marginRight: '10px'
+  margin: 'auto',
+  display: 'block'
 })
 
 const ModalContainer = styled(Dialog)({
@@ -118,9 +121,9 @@ const ExitButton = styled(IconButton)({
   right: '5px'
 })
 
-const DeleteContainer = styled('div')({
+const ContentContainer = styled('div')({
   padding: '15px',
-  marginTop: '15px',
+  marginTop: '25px',
   'text-align': 'center'
 })
 
@@ -171,13 +174,52 @@ const INCREMENT_FAVORITES = gql`
     }
 `
 
+const UPDATE_READ_REQUIREMENT = gql`
+    mutation updateReadRequirement($txId: String!, $readRequirement: Int!) {
+      updateReadRequirement(txId: $txId, readRequirement: $readRequirement)
+    }
+`
+
+const ReadRequirementModal = ({ isOpen, handleClose, handleUpdate, initialReadRequirement }) => {
+  const [readRequirement, setReadRequirement] = useState(initialReadRequirement)
+  const community = useCommunity()
+
+  return (
+    <ModalContainer
+      open={isOpen}
+      onClose={handleClose}
+    >
+      <ContentContainer>
+        <ExitButton
+          onClick={handleClose}
+        >
+          <Close />
+        </ExitButton>
+        <ReadRequirement
+          readRequirement={readRequirement}
+          setReadRequirement={setReadRequirement}
+          tokenSymbol={community.tokenSymbol}
+        />
+        <Confirm
+          disableElevation
+          color='primary'
+          variant='contained'
+          onClick={() => handleUpdate(readRequirement)}
+        >
+          UPDATE
+        </Confirm>
+      </ContentContainer>
+    </ ModalContainer >
+  )
+}
+
 const ConfirmDelete = ({ isOpen, handleClose, handleDelete }) => {
   return (
     <ModalContainer
       open={isOpen}
       onClose={handleClose}
     >
-      <DeleteContainer>
+      <ContentContainer>
         <ExitButton
           onClick={handleClose}
         >
@@ -194,18 +236,20 @@ const ConfirmDelete = ({ isOpen, handleClose, handleDelete }) => {
         >
           DELETE
         </Confirm>
-      </DeleteContainer>
+      </ContentContainer>
     </ ModalContainer >
   )
 }
 
 const Post = ({ post, comments }) => {
-  const { title, subtitle, postText, /* user, */ txId, community, favoriteCount, commentCount } = post
-  const [isDeleting, setIsDeleting] = useState(false)
+  const { title, subtitle, postText, /* user, */ txId, community, favoriteCount, commentCount, readRequirement } = post
+  const [isLoading, setIsLoading] = useState(false)
   const [hasLiked, setHasLiked] = useState(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
+  const [isUpdateRequirementOpen, setIsUpdateRequirementOpen] = useState(false)
   const [deletePostFromDb, { error }] = useMutation(DELETE_POST)
   const [incrementFavorites] = useMutation(INCREMENT_FAVORITES)
+  const [updateReadRequirement] = useMutation(UPDATE_READ_REQUIREMENT)
   const { authToken } = useAuth()
   const router = useRouter()
 
@@ -218,8 +262,42 @@ const Post = ({ post, comments }) => {
     router.push({ pathname: '/editor', query: { txId } })
   }
 
+  const handleUpdateReadRequirement = async (readRequirement) => {
+    setIsLoading(true)
+
+    let parsedReadRequirement = Number(readRequirement)
+    if (Number.isNaN(parsedReadRequirement)) parsedReadRequirement = undefined
+
+    await updateReadRequirement({
+      variables: {
+        txId,
+        readRequirement: parsedReadRequirement
+      },
+      context: {
+        headers: {
+          authorization: authToken
+        }
+      },
+      refetchQueries: [{
+        query: GET_POST,
+        variables: {
+          txId,
+          userToken: authToken
+        },
+        context: {
+          headers: {
+            authorization: authToken
+          }
+        }
+      }]
+    })
+
+    setIsUpdateRequirementOpen(false)
+    setIsLoading(false)
+  }
+
   const handleDelete = async () => {
-    setIsDeleting(true)
+    setIsLoading(true)
     await deletePostFromDb({
       variables: {
         txId
@@ -231,7 +309,7 @@ const Post = ({ post, comments }) => {
     if (comSlug) router.push(`/${comSlug}`)
     else router.push('/')
 
-    setIsDeleting(false)
+    setIsLoading(false)
   }
 
   const incrFavorites = async () => {
@@ -268,7 +346,13 @@ const Post = ({ post, comments }) => {
         handleClose={() => setIsConfirmDeleteOpen(false)}
         handleDelete={handleDelete}
       />
-      <LoadingBackdrop isLoading={isDeleting} />
+      <ReadRequirementModal
+        isOpen={isUpdateRequirementOpen}
+        handleClose={() => setIsUpdateRequirementOpen(false)}
+        handleUpdate={handleUpdateReadRequirement}
+        initialReadRequirement={readRequirement}
+      />
+      <LoadingBackdrop isLoading={isLoading} />
       { isAuthor() &&
         <AuthorActions>
           <EditMessage>Only you can see this message.</EditMessage>
@@ -281,6 +365,11 @@ const Post = ({ post, comments }) => {
             onClick={() => setIsConfirmDeleteOpen(true)}
           >
             DELETE POST
+          </ActionButton>
+          <ActionButton
+            onClick={() => setIsUpdateRequirementOpen(true)}
+          >
+            CHANGE READ REQUIREMENT
           </ActionButton>
         </AuthorActions>
       }

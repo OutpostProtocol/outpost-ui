@@ -28,7 +28,7 @@ import {
 } from '../constants'
 import PostActions from '../components/Editor/PostActions'
 import EditorPreview from '../components/Editor/EditorPreview'
-import ReadRequirement from '../components/Editor/ReadRequirement'
+import ReadRequirement from '../components/ReadRequirement/index.tsx'
 
 const ContentEditor = dynamic(import('../components/Editor/ContentEditor'), { ssr: false, loading: () => <LoadingBackdrop isLoading={true} /> })
 
@@ -43,6 +43,10 @@ const PreviewContainer = styled('div')({
   display: 'flex',
   alignItems: 'flex-end',
   marginTop: '30px'
+})
+
+const CommunitySelectorContainer = styled('div')({
+  marginRight: '20px'
 })
 
 const WarningText = styled('div')({
@@ -205,11 +209,13 @@ const EditorPage = () => {
         }
         <PreviewContainer>
           { !(postData?.post?.community?.txId) &&
-          <CommunitySelector
-            handleSelection={handleCommunitySelection}
-            placeHolder={placeholderCommunity}
-            disabled={isEditingMode}
-          />
+          <CommunitySelectorContainer>
+            <CommunitySelector
+              handleSelection={handleCommunitySelection}
+              placeHolder={placeholderCommunity}
+              disabled={isEditingMode}
+            />
+          </CommunitySelectorContainer>
           }
           { isCommunitySelected() &&
           <ReadRequirement

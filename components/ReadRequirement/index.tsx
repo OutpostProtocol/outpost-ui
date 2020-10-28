@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-use-before-define
 import React from 'react'
 import { Input } from '@material-ui/core'
 import { styled } from '@material-ui/core/styles'
@@ -20,8 +21,7 @@ const Symbol = styled('h4')({
 
 const Container = styled('div')({
   display: 'inline-flex',
-  alignItems: 'baseline',
-  paddingLeft: '20px'
+  alignItems: 'baseline'
 })
 
 interface Props {
@@ -31,7 +31,10 @@ interface Props {
 }
 
 const ReadRequirement = ({ tokenSymbol, readRequirement, setReadRequirement }: Props) => {
-  const symbol = ' $'.concat(tokenSymbol) || ' $'
+  let symbol
+  if (tokenSymbol == null) symbol = ' $'
+  else symbol = ' $'.concat(tokenSymbol)
+
   return (
     <Container>
       <Text>
