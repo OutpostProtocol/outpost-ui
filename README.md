@@ -11,7 +11,7 @@ NEXT_PUBLIC_MAGIC_KEY=optional_magic_key
 
 If you want to be able to sign in with email, you'll need to get a magic key from [magic](https://magic.link)
 
-First, run the development server:
+Run the development server:
 
 ```bash
 npm run dev
