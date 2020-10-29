@@ -143,7 +143,7 @@ const LoggedInPost = ({ backPath, txId }) => {
       setRefetchCalled(false)
     }
 
-    if (error && !refetchedCalled) {
+    if (error && !refetchedCalled && error.message.includes('User not authenticated')) {
       setRefetchCalled(true)
       handleRefetch()
     }

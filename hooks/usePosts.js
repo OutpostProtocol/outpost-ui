@@ -48,7 +48,8 @@ const usePosts = () => {
   const slug = router.query.comSlug
 
   const result = useQuery(GET_POSTS, {
-    variables: { slug }
+    variables: { slug },
+    fetchPolicy: 'network-only'
   })
 
   useErrorReporting(ERROR_TYPES.query, result?.error, 'GET_POSTS')
@@ -56,14 +57,10 @@ const usePosts = () => {
 }
 
 export const useOnePost = (txId, userToken) => {
-  if (!txId) return { postData: null }
-
   const [postData, setPostData] = useState()
   const [loading, setLoading] = useState(true)
   const { data, error, refetch } = useQuery(GET_POST, {
-    variables: {
-      txId
-    },
+    variables: { txId },
     fetchPolicy: 'network-only',
     ...getContext(userToken)
   })
@@ -76,6 +73,8 @@ export const useOnePost = (txId, userToken) => {
   }, [data])
 
   useErrorReporting(ERROR_TYPES.query, error, 'GET_ONE_POST')
+
+  if (!txId) return { postData: null }
   return { postData, loading, error, refetch }
 }
 
