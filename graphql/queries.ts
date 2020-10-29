@@ -80,6 +80,7 @@ export const getPost = `
         featuredImg
         canonicalLink
         txId
+        readRequirement
         community {
           name
           slug
