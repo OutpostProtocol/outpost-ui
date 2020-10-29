@@ -7,8 +7,6 @@ import {
   Lock
 } from '@material-ui/icons'
 
-import { getReadRequirement } from '../../utils'
-
 const PostContainer = styled('div')({
   padding: '10px',
   'border-radius': '4px',
@@ -134,7 +132,7 @@ const PostPreview = ({ post }) => {
           </Date>
         </Context>
       </PostInfo>
-      {community.tokenSymbol &&
+      {(community.tokenSymbol && readRequirement > 0) &&
         <Requirement>
           { readRequirement > userBalance
             ? <StyledLockClosed /> : <StyledLockOpen />
