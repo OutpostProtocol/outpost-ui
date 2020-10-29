@@ -204,7 +204,7 @@ export async function getServerSideProps (context) {
 
   const query = queries.postPage
 
-  const res = await axios.post(OUTPOST_API, {
+  const res = await axios.post(`${OUTPOST_API}/graphql`, {
     query,
     variables: {
       txId,

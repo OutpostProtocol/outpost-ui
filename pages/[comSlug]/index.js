@@ -62,7 +62,7 @@ export async function getServerSideProps (context) {
   const slug = context.params.comSlug
   const query = queries.getCommunityPage
 
-  const res = await axios.post(OUTPOST_API, {
+  const res = await axios.post(`${OUTPOST_API}/graphql`, {
     query,
     variables: {
       slug

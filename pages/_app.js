@@ -20,7 +20,7 @@ import '../styles/global.css'
 import 'react-quill/dist/quill.bubble.css'
 
 const httpLink = new HttpLink({
-  uri: process.env.NEXT_PUBLIC_OUTPOST_API,
+  uri: `${process.env.NEXT_PUBLIC_OUTPOST_API}/graphql`,
   fetch
 })
 
