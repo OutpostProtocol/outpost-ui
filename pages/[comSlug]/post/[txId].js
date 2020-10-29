@@ -158,7 +158,7 @@ const LoggedInPost = ({ backPath, txId }) => {
   }
 
   const { userBalance, readRequirement, tokenSymbol, tokenAddress, post, comments } = postData
-  const isAuthor = post.user.address.toLowerCase() === account.toLowerCase()
+  const isAuthor = post.user.address.toLowerCase() === account?.toLowerCase()
   const hasInsufficientBalance = readRequirement && userBalance < readRequirement
 
   if (hasInsufficientBalance && !isAuthor) {
