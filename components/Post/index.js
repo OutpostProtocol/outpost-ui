@@ -138,6 +138,11 @@ const Post = ({ post, comments }) => {
       variables: {
         txId
       },
+      context: {
+        headers: {
+          authorization: authToken
+        }
+      },
       refetchQueries: getRefetchPostsQuery(community.slug)
     })
 
@@ -206,7 +211,7 @@ const Post = ({ post, comments }) => {
         </SubHeader>
       </PostHeader>
       <PostContent id='blog-text'>
-        {
+        {postText &&
           htmlparse(postText)
         }
       </PostContent>
