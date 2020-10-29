@@ -2,7 +2,12 @@ import React from 'react'
 import { useRouter } from 'next/router'
 import { styled } from '@material-ui/core/styles'
 import moment from 'moment'
-import LockOpenIcon from '@material-ui/icons/LockOpen'
+import {
+  LockOpen,
+  Lock
+} from '@material-ui/icons'
+
+import { getReadRequirement } from '../../utils'
 
 const PostContainer = styled('div')({
   padding: '10px',
@@ -77,7 +82,13 @@ const Requirement = styled('div')({
   'font-size': '0.75em'
 })
 
-const StyledLock = styled(LockOpenIcon)({
+const StyledLockClosed = styled(Lock)({
+  position: 'relative',
+  top: '5px',
+  'margin-right': '10px'
+})
+
+const StyledLockOpen = styled(LockOpen)({
   position: 'relative',
   top: '5px',
   'margin-right': '10px'
@@ -86,13 +97,15 @@ const StyledLock = styled(LockOpenIcon)({
 const DATE_FORMAT = 'MMMM D YYYY'
 
 const PostPreview = ({ post }) => {
-  const { title, subtitle, user, featuredImg, timestamp, community } = post
+  const { title, subtitle, user, featuredImg, timestamp, community, readRequirement } = post
   const router = useRouter()
 
   const handleRedirect = () => {
     const url = `/${router.query.comSlug}/post/${post.txId}`
     router.push(url)
   }
+
+  const userBalance = 0
 
   return (
     <PostContainer
@@ -123,8 +136,10 @@ const PostPreview = ({ post }) => {
       </PostInfo>
       {community.tokenSymbol &&
         <Requirement>
-          <StyledLock />
-          REQUIRES {community.readRequirement} ${community.tokenSymbol}
+          { readRequirement > userBalance
+            ? <StyledLockClosed /> : <StyledLockOpen />
+          }
+          REQUIRES {readRequirement} ${community.tokenSymbol}
         </Requirement>
       }
     </PostContainer>

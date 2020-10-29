@@ -52,7 +52,9 @@ const TitleContainer = styled('div')({
 
 const Editor = styled(ReactQuill)({
   'margin-left': '-12px',
-  'margin-right': '-12px'
+  'margin-right': '-12px',
+  position: 'relative',
+  top: '-50px'
 })
 
 const ImageContainer = styled('div')({
@@ -80,11 +82,6 @@ const FeaturedImage = styled('img')({
   maxHeight: '200px',
   marginTop: '10px',
   'object-fit': 'cover'
-})
-
-const EditorContainer = styled(Editor)({
-  position: 'relative',
-  top: '-50px'
 })
 
 const UPLOAD_IMAGE = gql(mutations.uploadImage)
@@ -244,7 +241,7 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
           handleImage={() => uploadImage()}
           location={blockToolbarLocation}
         />
-        <EditorContainer
+        <Editor
           id='editor-container'
           theme='bubble'
           ref={editorRef}

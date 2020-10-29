@@ -54,3 +54,15 @@ export const uploadComment = `
     }
   }
 `
+
+export const deletePost = `
+  mutation deletePost($txId: String!) {
+    deletePost(txId: $txId)
+  }
+`
+
+export const updateReadRequirement = `
+    mutation updateReadRequirement($txId: String!, $readRequirement: Int!) {
+      updateReadRequirement(txId: $txId, readRequirement: $readRequirement)
+    }
+`

@@ -43,7 +43,7 @@ export const usePostPreview = (txId) => {
   }
 }
 
-const usePosts = (communityTxId) => {
+const usePosts = () => {
   const router = useRouter()
   const slug = router.query.comSlug
 

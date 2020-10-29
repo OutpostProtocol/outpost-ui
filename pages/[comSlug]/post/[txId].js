@@ -79,7 +79,7 @@ const PostPage = ({ postPreview, community }) => {
   const { account } = useWeb3React()
   const { authToken } = useAuth()
 
-  if ((!account || !authToken) && community.readRequirement) {
+  if ((!account || !authToken) && postPreview.readRequirement) {
     return (
       <PostLayout
         context={postPreview}
@@ -202,7 +202,7 @@ export async function getServerSideProps (context) {
   const OUTPOST_API = process.env.NEXT_PUBLIC_OUTPOST_API
   const { txId, comSlug } = context.params
 
-  const query = queries.postPreview
+  const query = queries.postPage
 
   const res = await axios.post(OUTPOST_API, {
     query,

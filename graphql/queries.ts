@@ -17,7 +17,7 @@ export const getAllCommunities = `
   }
 `
 
-export const postPreview = `
+export const postPage = `
   query postpage($txId: String!, $slug: String!) {
     postPreview (txId: $txId) {
       id
@@ -27,6 +27,7 @@ export const postPreview = `
       txId
       featuredImg
       canonicalLink
+      readRequirement
     }
     community(slug: $slug) {
       id
@@ -36,7 +37,7 @@ export const postPreview = `
       tokenSymbol
       description
       imageTxId
-      readRequirement
+      defaultReadRequirement
       owner {
         name
         image
@@ -54,9 +55,10 @@ export const getPosts = `
       timestamp
       txId
       featuredImg
+      readRequirement
       community {
         name
-        readRequirement
+        defaultReadRequirement
         tokenSymbol
       }
       user {
@@ -143,6 +145,9 @@ export const getUserRoles = `
         txId
         name
         slug
+        tokenAddress
+        tokenSymbol
+        defaultReadRequirement
       }
     }
   }
@@ -158,7 +163,7 @@ export const getCommunityPage = `
         tokenSymbol
         description
         imageTxId
-        readRequirement
+        defaultReadRequirement
         owner {
           name
           image

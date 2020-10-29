@@ -9,13 +9,20 @@ import {
 } from '@apollo/client'
 import { useWeb3React } from '@web3-react/core'
 
+import { mutations, getRefetchPostsQuery } from '../../graphql'
 import Share from '../Share'
+import useAuth from '../../hooks/useAuth'
 import LoadingBackdrop from '../LoadingBackdrop'
 import Comments from '../Comments'
-import { GET_POSTS } from '../../hooks/usePosts'
 import { useErrorReporting } from '../../hooks'
 import { ERROR_TYPES } from '../../constants'
 import PostContext from '../PostContext'
+import ConfirmDelete from './ConfirmDelete'
+import ReadRequirementModal from '../ReadRequirement/ReadRequirementModal'
+
+const DELETE_POST = gql(mutations.deletePost)
+
+const UPDATE_READ_REQUIREMENT = gql(mutations.updateReadRequirement)
 
 const PostContainer = styled('div')({
   padding: '10px',
@@ -79,18 +86,19 @@ const StyledHr = styled('hr')({
   'background-color': '#c4c4c4'
 })
 
-const DELETE_POST = gql`
-    mutation deletePost($txId: String!) {
-      deletePost(txId: $txId)
-    }
-  `
+const ButtonContainer = styled('div')({})
 
 const Post = ({ post, comments }) => {
   const { account } = useWeb3React()
-  const { title, subtitle, postText, user, txId, community } = post
-  const [isDeleting, setIsDeleting] = useState(false)
+  const { title, subtitle, postText, user, txId, community, readRequirement } = post
+  const [isLoading, setIsLoading] = useState(false)
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
+  const [isUpdateRequirementOpen, setIsUpdateRequirementOpen] = useState(false)
   const [deletePostFromDb, { error }] = useMutation(DELETE_POST)
+  const [updateReadRequirement] = useMutation(UPDATE_READ_REQUIREMENT)
+  const { authToken } = useAuth()
   const router = useRouter()
+
   useErrorReporting(ERROR_TYPES.mutation, error, 'DELETE_POST')
 
   const isAuthor = () => {
@@ -101,38 +109,79 @@ const Post = ({ post, comments }) => {
     router.push({ pathname: '/editor', query: { txId } })
   }
 
+  const handleUpdateReadRequirement = async (readRequirement) => {
+    setIsLoading(true)
+
+    let parsedReadRequirement = Number(readRequirement)
+    if (Number.isNaN(parsedReadRequirement)) parsedReadRequirement = undefined
+
+    await updateReadRequirement({
+      variables: {
+        txId,
+        readRequirement: parsedReadRequirement
+      },
+      context: {
+        headers: {
+          authorization: authToken
+        }
+      },
+      refetchQueries: getRefetchPostsQuery(community.slug)
+    })
+
+    setIsUpdateRequirementOpen(false)
+    setIsLoading(false)
+  }
+
   const handleDelete = async () => {
-    setIsDeleting(true)
+    setIsLoading(true)
     await deletePostFromDb({
       variables: {
         txId
       },
-      refetchQueries: [{ query: GET_POSTS }]
+      refetchQueries: getRefetchPostsQuery(community.slug)
     })
 
     const comSlug = router.query.comSlug
     if (comSlug) router.push(`/${comSlug}`)
     else router.push('/')
 
-    setIsDeleting(false)
+    setIsLoading(false)
   }
 
   return (
     <PostContainer>
-      <LoadingBackdrop isLoading={isDeleting} />
+      <ConfirmDelete
+        isOpen={isConfirmDeleteOpen}
+        handleClose={() => setIsConfirmDeleteOpen(false)}
+        handleDelete={handleDelete}
+      />
+      <ReadRequirementModal
+        isOpen={isUpdateRequirementOpen}
+        handleClose={() => setIsUpdateRequirementOpen(false)}
+        handleUpdate={handleUpdateReadRequirement}
+        initialReadRequirement={readRequirement}
+      />
+      <LoadingBackdrop isLoading={isLoading} />
       { isAuthor() &&
         <AuthorActions>
           <EditMessage>Only you can see this message.</EditMessage>
-          <ActionButton
-            onClick={handleEdit}
-          >
+          <ButtonContainer>
+            <ActionButton
+              onClick={handleEdit}
+            >
             EDIT POST
-          </ActionButton>
-          <ActionButton
-            onClick={handleDelete}
-          >
+            </ActionButton>
+            <ActionButton
+              onClick={() => setIsConfirmDeleteOpen(true)}
+            >
             DELETE POST
-          </ActionButton>
+            </ActionButton>
+            <ActionButton
+              onClick={() => setIsUpdateRequirementOpen(true)}
+            >
+            CHANGE TOKEN REQUIREMENT
+            </ActionButton>
+          </ButtonContainer>
         </AuthorActions>
       }
       <PostHeader>

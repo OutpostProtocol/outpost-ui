@@ -11,20 +11,18 @@ import {
 } from '@apollo/client'
 import dynamic from 'next/dynamic'
 
-import { mutations } from '../graphql'
+import { mutations, getRefetchPostsQuery } from '../graphql'
 import { useAccountRoles } from '../context/Role'
 import useAuth from '../hooks/useAuth'
 import Toolbar from '../components/Toolbar'
-import {
-  useOnePost,
-  GET_POSTS
-} from '../hooks/usePosts'
+import { useOnePost } from '../hooks/usePosts'
 import LoadingBackdrop from '../components/LoadingBackdrop'
 import SEO from '../components/seo'
 import { PLACEHOLDER_COMMUNITY } from '../constants'
 import CommunitySelector from '../components/Editor/CommunitySelector'
 import PostActions from '../components/Editor/PostActions'
 import EditorPreview from '../components/Editor/EditorPreview'
+import ReadRequirement from '../components/ReadRequirement'
 
 const ContentEditor = dynamic(import('../components/Editor/ContentEditor'), { ssr: false, loading: () => <LoadingBackdrop isLoading={true} /> })
 
@@ -36,8 +34,13 @@ const EditorContainer = styled('div')({
 })
 
 const PreviewContainer = styled('div')({
-  height: '3em',
-  'margin-top': '30px'
+  display: 'flex',
+  alignItems: 'flex-end',
+  marginTop: '30px'
+})
+
+const PostOptions = styled('div')({
+
 })
 
 const UPLOAD_POST = gql(mutations.uploadPost)
@@ -54,6 +57,7 @@ const EditorPage = () => {
   const [featuredImage, setFeaturedImage] = useState(undefined)
   const [subtitle, setSubtitle] = useState('')
   const [postText, setPostText] = useState('')
+  const [readRequirement, setReadRequirement] = useState('')
   const [isWaitingForUpload, setIsWaiting] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [uploadPostToDb] = useMutation(UPLOAD_POST, {
@@ -83,9 +87,11 @@ const EditorPage = () => {
       setFeaturedImage(post.featuredImg)
       setPostText(post.postText)
       setActiveCommunity(post.community)
+      setReadRequirement(post.community.defaultReadRequirement)
     } else if (Array.isArray(communities) && communities.length === 1) {
       const [community] = communities
       setActiveCommunity(community)
+      setReadRequirement(community.defaultReadRequirement)
     }
   }, [postData, loading, communities, setActiveCommunity])
 
@@ -98,8 +104,11 @@ const EditorPage = () => {
     setCommunities(Object.values(coms))
   }, [roles])
 
+  let parsedReadRequirement = Number(readRequirement)
+  if (Number.isNaN(parsedReadRequirement)) parsedReadRequirement = undefined
+
   const handlePost = async () => {
-    if (!isValidPost) return
+    if (!isValidPost()) return
     setIsWaiting(true)
     const parsedPost = converter.makeHtml(postText.replace(/\\/g, '<br/>'))
     const timestamp = postData?.timestamp || Math.floor(Date.now() / 1000)
@@ -110,7 +119,8 @@ const EditorPage = () => {
       canonicalLink: null,
       parentTxId: router.query?.txId,
       timestamp: timestamp,
-      featuredImg: featuredImage
+      featuredImg: featuredImage,
+      readRequirement: parsedReadRequirement
     }
 
     await handleUpload(postUpload)
@@ -119,14 +129,16 @@ const EditorPage = () => {
   }
 
   const handleUpload = async (postUpload) => {
-    const comTxId = postData?.post?.community?.txId || activeCommunity.txId
+    const curCommunity = postData?.post?.community || activeCommunity
+    const comTxId = curCommunity.txId
+    const slug = curCommunity.slug
 
     const options = {
       variables: {
         postUpload: postUpload,
         communityTxId: comTxId
       },
-      refetchQueries: [{ query: GET_POSTS }]
+      refetchQueries: getRefetchPostsQuery(slug)
     }
 
     await uploadPostToDb(options)
@@ -149,6 +161,8 @@ const EditorPage = () => {
 
     return true
   }
+
+  const isCommunitySelected = postData?.post?.community?.txId || activeCommunity.txId !== PLACEHOLDER_COMMUNITY.txId
 
   return (
     <>
@@ -177,15 +191,24 @@ const EditorPage = () => {
           />
         }
         <PreviewContainer>
-          { !(postData?.post?.community?.txId) &&
-          <CommunitySelector
-            setActiveCommunity={setActiveCommunity}
-            activeCommunity={activeCommunity}
-            communities={communities}
-            placeHolder={PLACEHOLDER_COMMUNITY}
-            disabled={isEditingMode}
-          />
-          }
+          <PostOptions>
+            { !(postData?.post?.community?.txId) &&
+              <CommunitySelector
+                setActiveCommunity={setActiveCommunity}
+                activeCommunity={activeCommunity}
+                communities={communities}
+                placeHolder={PLACEHOLDER_COMMUNITY}
+                disabled={isEditingMode}
+              />
+            }
+            { (isCommunitySelected && activeCommunity.tokenAddress) &&
+              <ReadRequirement
+                activeCommunity={activeCommunity}
+                readRequirement={readRequirement}
+                setReadRequirement={setReadRequirement}
+              />
+            }
+          </PostOptions>
           <PostActions
             setShowPreview={setShowPreview}
             showPreview={showPreview}

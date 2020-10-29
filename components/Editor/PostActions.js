@@ -7,7 +7,7 @@ const PostButton = styled(Button)({
 })
 
 const PostButtonContainer = styled('div')({
-  float: 'right'
+  marginLeft: 'auto'
 })
 
 const PostActions = ({ showPreview, setShowPreview, handlePost }) => {

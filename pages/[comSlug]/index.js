@@ -49,7 +49,7 @@ const CommunityPage = ({ community }) => {
         <MastHead />
         <FeedContainer>
           <FeedHeader>
-          READ THE LATEST
+            READ THE LATEST
           </FeedHeader>
           <Feed/>
         </FeedContainer>
