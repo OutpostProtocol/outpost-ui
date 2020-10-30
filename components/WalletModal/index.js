@@ -108,7 +108,7 @@ const WalletModal = ({ open, handleClose, setPrevLoading }) => {
   const [showMsg, setShowMsg] = useState(false)
   const [isMagic, setIsMagic] = useState(false)
   const { isPrevLoading } = usePrevWallet()
-  const { isGettingToken, checkToken, fetchToken, setAuthToken } = useAuth()
+  const { isGettingToken, fetchToken, setAuthToken } = useAuth()
 
   const handleEmail = (event) => {
     if (event && event.target && event.target.value) {
@@ -227,7 +227,7 @@ const WalletModal = ({ open, handleClose, setPrevLoading }) => {
         handleClose()
       }
     }
-  }, [account, curAccount, setCurAccount, library, deactivate, handleClose, checkToken, fetchToken, setAuthToken, isGettingToken])
+  }, [account, curAccount, setCurAccount, library, deactivate, handleClose, fetchToken, setAuthToken, isGettingToken])
 
   const closeError = (event, reason) => {
     if (reason === 'clickaway') {

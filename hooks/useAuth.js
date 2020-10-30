@@ -1,26 +1,16 @@
 import { useCallback, useContext } from 'react'
+import axios from 'axios'
 import store from 'store'
 import { ERROR_TYPES, LOGIN_TOKEN } from '../constants'
 import { useWeb3React } from '@web3-react/core'
-import { useMutation, gql } from '@apollo/client'
 import { ethers } from 'ethers'
 import { AuthContext } from '../context/Auth'
 
-import { mutations } from '../graphql'
-
-const SIGN_IN_TOKEN = gql(mutations.getSignInToken)
-
-const AUTHENTICATE = gql(mutations.authAccount)
-
-// validate token isn't really a mutation but we want it to execute like one
-const VALIDATE_TOKEN = gql(mutations.verifyToken)
+const OUTPOST_API = process.env.NEXT_PUBLIC_OUTPOST_API
 
 const useAuth = () => {
   const { setAuthToken, authToken, setGettingToken, isGettingToken } = useContext(AuthContext)
   const { account, library } = useWeb3React()
-  const [getAuthToken] = useMutation(SIGN_IN_TOKEN)
-  const [authAccount] = useMutation(AUTHENTICATE)
-  const [validateToken] = useMutation(VALIDATE_TOKEN)
 
   const checkError = useCallback(
     (loginRes) => {
@@ -40,32 +30,33 @@ const useAuth = () => {
 
   const validate = useCallback(
     async (token) => {
-      const validation = await validateToken({
-        variables: {
-          token
-        }
-      })
+      const validationRes = await axios.post(
+        `${OUTPOST_API}/relay/verify-challenge`,
+        { token }
+      )
 
-      if (validation.data.verifyToken) {
+      console.log(validationRes, 'THE RESULT')
+
+      if (validationRes.data) {
         return true
       } else {
         return false
       }
     },
-    [validateToken]
+    []
   )
 
   const fetchToken = async () => {
     if (!account) return false
     setGettingToken(true)
-    const tokenRes = await getAuthToken({
-      variables: {
-        addr: account
-      }
-    })
+    const challengeRes = await axios.post(
+      `${OUTPOST_API}/relay/get-challenge`,
+      { address: account }
+    )
 
-    checkError(tokenRes)
-    let token = tokenRes.data.getSignInToken
+    checkError(challengeRes)
+    let token = challengeRes.data
+
     const signer = library.getSigner()
 
     let sig
@@ -83,18 +74,19 @@ const useAuth = () => {
       return
     }
 
-    const authRes = await authAccount({
-      variables: {
-        sig,
-        addr: account
+    const verifyRes = await axios.post(
+      `${OUTPOST_API}/relay/verify-challenge`,
+      {
+        signature: sig,
+        address: account
       }
-    })
+    )
 
-    checkError(authRes)
-    store.set(`${LOGIN_TOKEN}.${account}`, authRes.data.authAccount)
-    setAuthToken(authRes.data.authAccount)
+    checkError(verifyRes)
+    store.set(`${LOGIN_TOKEN}.${account}`, verifyRes.data)
+    setAuthToken(verifyRes.data)
     setGettingToken(false)
-    return authRes.data.authAccount
+    return verifyRes.data
   }
 
   return {
