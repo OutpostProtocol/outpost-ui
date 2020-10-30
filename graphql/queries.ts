@@ -69,7 +69,7 @@ export const getPosts = `
 `
 
 export const getPost = `
-  query getPost($txId: String!) {
+  query getPost($txId: String) {
     getPost(txId: $txId) {
       post {
         id

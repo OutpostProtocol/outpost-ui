@@ -9,11 +9,9 @@ import {
   CircularProgress
 } from '@material-ui/core'
 import { useWeb3React } from '@web3-react/core'
-import {
-  gql,
-  useMutation
-} from '@apollo/client'
+import axios from 'axios'
 
+import useAuth from '../../hooks/useAuth'
 import BlockToolbar from './BlockToolbar'
 import FormattingToolbar, {
   modules,
@@ -24,8 +22,6 @@ import {
   getTweet,
   getYoutubeVideo
 } from './CustomBlocks'
-
-import { mutations } from '../../graphql'
 
 registerCustomBlocks()
 
@@ -84,12 +80,10 @@ const FeaturedImage = styled('img')({
   'object-fit': 'cover'
 })
 
-const UPLOAD_IMAGE = gql(mutations.uploadImage)
-
 const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSubtitle, setPostText, setFeaturedImage, isEditing }) => {
+  const { authToken } = useAuth()
   const { account } = useWeb3React()
   const editorRef = useRef(undefined)
-  const [uploadImageToAR] = useMutation(UPLOAD_IMAGE)
   const [blockToolbarLocation, setBlockToolbarLocation] = useState({ top: 0, left: 0 })
   const [isFeaturedImageLoading, setIsFeaturedImageLoading] = useState(false)
   const loadingImg = '/editor/loading.gif'
@@ -104,37 +98,22 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
     input.dataset.link = 'https://www.outpost-protocol.com'
   }
 
-  const getBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = () => {
-        let encoded = reader.result.toString().replace(/^data:(.*,)?/, '')
-        if ((encoded.length % 4) > 0) {
-          encoded += '='.repeat(4 - (encoded.length % 4))
-        }
-        resolve(encoded)
-      }
-      reader.onerror = error => reject(error)
-    })
-  }
-
   const imageUpload = async (photoFile) => {
-    const rawImage = await getBase64(photoFile)
+    const form = new FormData()
+    form.append('image', photoFile)
+    form.append('address', account)
 
-    const image = {
-      data: rawImage,
-      mimeType: photoFile.type
-    }
-    const options = {
-      variables: {
-        image: image,
-        address: account
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_OUTPOST_API}/relay/image-upload`, form,
+      {
+        headers: {
+          authorization: authToken,
+          'content-type': 'multipart/form-data'
+        }
       }
-    }
-    const res = await uploadImageToAR(options)
+    )
 
-    const featuredImgSrc = `https://arweave.dev/${res.data.uploadImage.txId}`
+    const featuredImgSrc = `https://arweave.dev/${res.data.txId}`
     return featuredImgSrc
   }
 
