@@ -8,7 +8,6 @@ import {
   Input,
   CircularProgress
 } from '@material-ui/core'
-import { useWeb3React } from '@web3-react/core'
 import axios from 'axios'
 
 import useAuth from '../../hooks/useAuth'
@@ -82,7 +81,6 @@ const FeaturedImage = styled('img')({
 
 const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSubtitle, setPostText, setFeaturedImage, isEditing }) => {
   const { authToken } = useAuth()
-  const { account } = useWeb3React()
   const editorRef = useRef(undefined)
   const [blockToolbarLocation, setBlockToolbarLocation] = useState({ top: 0, left: 0 })
   const [isFeaturedImageLoading, setIsFeaturedImageLoading] = useState(false)
@@ -98,17 +96,35 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
     input.dataset.link = 'https://www.outpost-protocol.com'
   }
 
+  const getBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => {
+        let encoded = reader.result.toString().replace(/^data:(.*,)?/, '')
+        if ((encoded.length % 4) > 0) {
+          encoded += '='.repeat(4 - (encoded.length % 4))
+        }
+        resolve(encoded)
+      }
+      reader.onerror = error => reject(error)
+    })
+  }
+
   const imageUpload = async (photoFile) => {
-    const form = new FormData()
-    form.append('image', photoFile)
-    form.append('address', account)
+    const rawData = await getBase64(photoFile)
+
+    const image = {
+      rawData: rawData,
+      mimeType: photoFile.type
+    }
 
     const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_OUTPOST_API}/relay/image-upload`, form,
+      `${process.env.NEXT_PUBLIC_OUTPOST_API}/relay/image-upload`,
+      image,
       {
         headers: {
-          authorization: authToken,
-          'content-type': 'multipart/form-data'
+          authorization: authToken
         }
       }
     )
