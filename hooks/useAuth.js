@@ -35,8 +35,6 @@ const useAuth = () => {
         { token }
       )
 
-      console.log(validationRes, 'THE RESULT')
-
       if (validationRes.data) {
         return true
       } else {
