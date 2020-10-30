@@ -117,7 +117,7 @@ const EditorPage = () => {
       subtitle: subtitle,
       postText: parsedPost,
       canonicalLink: null,
-      parentTxId: router.query?.txId,
+      originalTxId: router.query?.txId,
       timestamp: timestamp,
       featuredImg: featuredImage,
       readRequirement: parsedReadRequirement
