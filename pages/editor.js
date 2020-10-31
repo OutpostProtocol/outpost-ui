@@ -88,7 +88,7 @@ const EditorPage = () => {
       setPostText(post.postText)
       setActiveCommunity(post.community)
       setReadRequirement(post.community.defaultReadRequirement)
-    } else if (Array.isArray(communities) && communities.length === 1) {
+    } else if (Array.isArray(communities) && communities.length > 0) {
       const [community] = communities
       setActiveCommunity(community)
       setReadRequirement(community.defaultReadRequirement)
@@ -98,7 +98,7 @@ const EditorPage = () => {
   useEffect(() => {
     const coms = {}
     roles.forEach(r => {
-      coms[r.community.name] = r.community
+      coms[r.community.slug] = r.community
     })
 
     setCommunities(Object.values(coms))
