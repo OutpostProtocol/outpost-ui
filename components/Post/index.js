@@ -153,8 +153,6 @@ const Post = ({ post, comments }) => {
     setIsLoading(false)
   }
 
-  console.log(community.tokenAddress, 'THE TOKEN ADDRESS')
-
   return (
     <PostContainer>
       <ConfirmDelete
