@@ -85,6 +85,7 @@ export const getPost = `
           name
           slug
           txId
+          tokenAddress
         }
         user {
           address
@@ -164,6 +165,7 @@ export const getCommunityPage = `
         tokenSymbol
         description
         imageTxId
+        slug
         defaultReadRequirement
         owner {
           name
