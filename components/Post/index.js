@@ -153,6 +153,8 @@ const Post = ({ post, comments }) => {
     setIsLoading(false)
   }
 
+  console.log(community.tokenAddress, 'THE TOKEN ADDRESS')
+
   return (
     <PostContainer>
       <ConfirmDelete
@@ -181,11 +183,13 @@ const Post = ({ post, comments }) => {
             >
             DELETE POST
             </ActionButton>
-            <ActionButton
-              onClick={() => setIsUpdateRequirementOpen(true)}
-            >
-            CHANGE TOKEN REQUIREMENT
-            </ActionButton>
+            {community.tokenAddress &&
+              <ActionButton
+                onClick={() => setIsUpdateRequirementOpen(true)}
+              >
+                CHANGE TOKEN REQUIREMENT
+              </ActionButton>
+            }
           </ButtonContainer>
         </AuthorActions>
       }
