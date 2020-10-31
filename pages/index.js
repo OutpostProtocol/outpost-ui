@@ -158,9 +158,7 @@ const Home = ({ communities }) => {
 }
 
 export async function getStaticProps () {
-  console.log(OUTPOST_API, 'THE OUTPOST API')
   const res = await axios.post(`${OUTPOST_API}/graphql`, { query: queries.getAllCommunities })
-  console.log(res.data.data, 'THE DATA FROM ')
 
   const communities = res.data.data.allCommunities
 
