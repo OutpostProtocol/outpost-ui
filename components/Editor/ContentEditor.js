@@ -129,7 +129,7 @@ const ContentEditor = ({ title, subtitle, postText, featuredImg, setTitle, setSu
       }
     )
 
-    const featuredImgSrc = `https://arweave.dev/${res.data.txId}`
+    const featuredImgSrc = `https://${res.data.gateway}/${res.data.txId}`
     return featuredImgSrc
   }
 
