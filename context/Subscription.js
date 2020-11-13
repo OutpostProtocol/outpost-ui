@@ -21,6 +21,7 @@ const SubscriptionContext = createContext({
 
 export const SubscriptionProvider = ({ children }) => {
   const { library, account } = useWeb3React()
+  const [initialized, setInitialized] = useState(false)
   const [sf, setSf] = useState(null)
   const [subContract, setSubContract] = useState(null)
   const [flowRate, setFlowRate] = useState(0)
@@ -43,30 +44,17 @@ export const SubscriptionProvider = ({ children }) => {
   )
 
   const approveIda = async () => {
-    console.log(`approving ida for index ${idaIndex}`)
-    console.log(sf.agreements.ida.approveSubscription, 'THE FUNCTION')
-    console.log(sf.agreements.ida.interface, 'THE INTERFACE')
-    const fragment = sf.agreements.ida.interface.fragments.filter(f => f.name === 'approveSubscription')[0]
-    console.log(fragment, 'THE FRAGMENT')
-    console.log(idaIndex, 'THE IDA INDEX')
     await sf.host.callAgreement(
       sf.agreements.ida.address,
       sf.agreements.ida.interface.encodeFunctionData(
         'approveSubscription',
-        superTokenAddress,
-        subContract.address,
-        idaIndex,
-        '0x'
-      ),
-      /*
-      sf.agreements.ida.approveSubscription(
-        superToken,
-        subContract.address,
-        idaIndex,
-        '0x'
-      ).encodeABI(),
-      */
-      { from: account }
+        [
+          superTokenAddress,
+          subContract.address,
+          idaIndex,
+          '0x'
+        ]
+      )
     )
   }
 
@@ -79,8 +67,7 @@ export const SubscriptionProvider = ({ children }) => {
         subContract.address,
         '0x'
       )
-        .encodeABI(),
-      { from: account }
+        .encodeABI()
     )
 
     await handleCheckSubscription()
@@ -103,7 +90,7 @@ export const SubscriptionProvider = ({ children }) => {
     // approve accepted token and upgrade to super token
     await checkApproval(amount)
 
-    const xToken = new ethers.Contract(superTokenAddress, ISuperTokenABI, library)
+    const xToken = new ethers.Contract(superTokenAddress, ISuperTokenABI, window.web3.getSigner())
     await xToken.upgrade(amount.toString(), { from: account })
   }
 
@@ -148,7 +135,7 @@ export const SubscriptionProvider = ({ children }) => {
       setSuperToken(xToken)
       setFlowRate(rate)
 
-      const token = new ethers.Contract(tokenAddress, ERC20WithTokenInfoABI, library)
+      const token = new ethers.Contract(tokenAddress, ERC20WithTokenInfoABI, window.web3.getSigner())
       setERC20Token(token)
     }
 
@@ -170,11 +157,11 @@ export const SubscriptionProvider = ({ children }) => {
 
   useEffect(() => {
     const handleInit = async () => {
-      const superfluid = new Framework(library)
+      const superfluid = new Framework(window.web3)
       await superfluid.init()
       setSf(superfluid)
 
-      const sub = new ethers.Contract(SUBSCRIPTION_ADDRESS, SubscriptionABI, library)
+      const sub = new ethers.Contract(SUBSCRIPTION_ADDRESS, SubscriptionABI, window.web3.getSigner())
       setSubContract(sub)
 
       const [rate, tokenAddress, xToken, index] = await Promise.all([
@@ -184,18 +171,20 @@ export const SubscriptionProvider = ({ children }) => {
         sub.idaIndex()
       ])
 
+      console.log(index, 'THE IDA INDEX set in use effect')
       setSuperToken(xToken)
       setFlowRate(rate)
       setIdaIndex(index)
 
-      const token = new ethers.Contract(tokenAddress, ERC20WithTokenInfoABI, library)
+      const token = new ethers.Contract(tokenAddress, ERC20WithTokenInfoABI, window.web3.getSigner())
       setERC20Token(token)
     }
 
-    if (library) {
+    if (library && !initialized) {
       handleInit()
+      setInitialized(true)
     }
-  }, [library])
+  }, [library, initialized])
 
   useEffect(() => {
     if (subContract && account) {
