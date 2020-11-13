@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { styled } from '@material-ui/core/styles'
 import { CircularProgress } from '@material-ui/core'
-import Iframe from 'react-iframe'
 import { useWeb3React } from '@web3-react/core'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 
 import { CommunityProvider } from '../../../context/Community'
+import { SubscriptionProvider } from '../../../context/Subscription'
+import SubscriptionContainer from '../../../components/SubscriptionContainer'
 import useAuth from '../../../hooks/useAuth'
 import { useOnePost } from '../../../hooks/usePosts'
 import Post from '../../../components/Post'
@@ -38,10 +39,6 @@ const IframeContainer = styled('div')({
     'flex-direction': 'row',
     width: '80%'
   }
-})
-
-const StyledIFrame = styled(Iframe)({
-  'border-radius': '10px'
 })
 
 const MessageContainer = styled('div')({
@@ -115,17 +112,19 @@ const PostLayout = ({ children, context, community }) => {
     <CommunityProvider
       community={community}
     >
-      <SEO
-        title={title}
-        description={subtitle}
-        image={featuredImg}
-      />
-      <Toolbar
-        prevUrl={router.query.comSlug}
-      />
-      <>
-        {children}
-      </>
+      <SubscriptionProvider>
+        <SEO
+          title={title}
+          description={subtitle}
+          image={featuredImg}
+        />
+        <Toolbar
+          prevUrl={router.query.comSlug}
+        />
+        <>
+          {children}
+        </>
+      </SubscriptionProvider>
     </CommunityProvider>
   )
 }
@@ -157,33 +156,13 @@ const LoggedInPost = ({ backPath, txId }) => {
     )
   }
 
-  const { userBalance, readRequirement, tokenSymbol, tokenAddress, post, comments } = postData
+  const { post, comments, hasSubscription } = postData
   const isAuthor = post.user.address.toLowerCase() === account?.toLowerCase()
-  const hasInsufficientBalance = readRequirement && userBalance < readRequirement
 
-  if (hasInsufficientBalance && !isAuthor) {
+  if (!hasSubscription && !isAuthor) {
     return (
       <IframeContainer>
-        <MessageContainer>
-          <Message>
-              You need {readRequirement} ${tokenSymbol} to access this post.
-          </Message>
-          <Message>
-              Your Balance: {userBalance}
-          </Message>
-          <Message>
-              Buy ${tokenSymbol} on uniswap
-          </Message>
-        </MessageContainer>
-        <StyledIFrame
-          url={`https://uniswap.exchange/?outputCurrency=${tokenAddress}`}
-          height={'600px'}
-          width={'700px'}
-          frameBorder="0"
-          style={{ border: 'none', outline: 'none', 'border-radius': '10px' }}
-          display="initial"
-          position="relative"
-        />
+        <SubscriptionContainer />
       </ IframeContainer>
     )
   }

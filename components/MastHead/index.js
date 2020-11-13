@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { styled } from '@material-ui/core/styles'
-import { Button } from '@material-ui/core'
+import { Button, Dialog } from '@material-ui/core'
 import Iframe from 'react-iframe'
 
+import SubscriptionContainer from '../SubscriptionContainer'
 import { useCommunity } from '../../context/Community'
+import { useSubscription } from '../../context/Subscription'
 
 const Container = styled('div')({
   'background-color': '#F2F2F2',
@@ -70,6 +72,17 @@ const Description = styled('div')({
 
 const BuyContainer = styled('div')({})
 
+const TokenActions = styled('div')({
+  display: 'flex',
+  'flex-direction': 'column',
+  'justify-content': 'space-around',
+  'align-items': 'center'
+})
+
+const ApproveIdaContainer = styled('div')({})
+
+const BuySubscriptionContainer = styled('div')({})
+
 const FrameWrapper = styled('div')({
   'min-width': '100vw',
   height: '100vh',
@@ -104,18 +117,41 @@ const FrameBorder = styled('div')({
   overflow: 'hidden'
 })
 
+// break into token holders and non token holders
+
 const MastHead = () => {
-  const community = useCommunity()
-  const [showModal, toggleModal] = useState(false)
+  const { approveIda, hasSubscription } = useSubscription()
+  const { community, userTokenBalance } = useCommunity()
+  const [showUniModal, toggleUniModal] = useState(false)
+  const [showSubModal, toggleSubModal] = useState(false)
+  const [hasApproved, setHasApproved] = useState(false)
+
+  const handleApproveIda = async () => {
+    console.log('approve ida called')
+    await approveIda()
+    setHasApproved(true)
+  }
+
+  /* TODO: Check whether they've created an approval already to update the ui
+  useEffect(() => {
+    const checkApproval = async () => {
+      const hasApproval = sub...
+    }
+
+    if (account && userTokenBalance > 0) {
+      checkApproval()
+    }
+  }, [account])
+  */
 
   const { imageTxId, name, description, tokenSymbol, tokenAddress, owner, showOwner } = community
   return (
     <Container>
       <PaddingContainer>
-        {showModal && (
+        {showUniModal && (
           <FrameWrapper
             onClick={() => {
-              toggleModal(false)
+              toggleUniModal(false)
             }}
           >
             <CloseIcon>✕</CloseIcon>
@@ -133,11 +169,17 @@ const MastHead = () => {
             </FrameBorder>
           </FrameWrapper>
         )}
+        <Dialog
+          open={showSubModal}
+          onClose={() => toggleSubModal(false)}
+        >
+          <SubscriptionContainer />
+        </Dialog>
         <Header>
           <HeaderImages>
             <CommunityImage src={`https://arweave.net/${imageTxId}`} alt={name} />
             {showOwner && owner.image &&
-            <ProfileImage src={owner.image} alt={`${name} Creator`} />
+              <ProfileImage src={owner.image} alt={`${name} Creator`} />
             }
           </HeaderImages>
           <CommunityInfo>
@@ -155,16 +197,50 @@ const MastHead = () => {
           </CommunityInfo>
         </Header>
         {tokenSymbol &&
-          <BuyContainer>
-            <Button
-              variant='contained'
-              color='secondary'
-              disableElevation
-              onClick={() => toggleModal(true)}
-            >
-            BUY ${tokenSymbol}
-            </Button>
-          </BuyContainer>
+          <TokenActions>
+            <BuyContainer>
+              <Button
+                variant='contained'
+                color='secondary'
+                disableElevation
+                onClick={() => toggleUniModal(true)}
+              >
+                BUY ${tokenSymbol}
+              </Button>
+            </BuyContainer>
+            {userTokenBalance > 0 &&
+               <ApproveIdaContainer>
+                 {hasApproved
+                   ? <Button
+                     disableElevation
+                     color='secondary'
+                     variant='contained'
+                     disabled
+                   >
+                    REWARDS APPROVED &#x2713;
+                   </Button>
+                   : <Button
+                     variant='contained'
+                     color='secondary'
+                     disableElevation
+                     onClick={() => handleApproveIda()}
+                   >
+                    APPROVE REWARDS
+                   </Button>
+                 }
+               </ApproveIdaContainer>
+            }
+            <BuySubscriptionContainer>
+              <Button
+                disableElevation
+                color='secondary'
+                variant='contained'
+                onClick={() => toggleSubModal(true)}
+              >
+                {hasSubscription ? 'MANAGE SUBSCRIPTION' : 'BUY SUBSCRIPTION'}
+              </Button>
+            </BuySubscriptionContainer>
+          </TokenActions>
         }
       </PaddingContainer>
     </Container>

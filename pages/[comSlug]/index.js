@@ -4,6 +4,7 @@ import axios from 'axios'
 import Error from 'next/error'
 
 import { CommunityProvider } from '../../context/Community'
+import { SubscriptionProvider } from '../../context/Subscription'
 import SEO from '../../components/seo'
 import Feed from '../../components/Feed'
 import Toolbar from '../../components/Toolbar'
@@ -42,17 +43,19 @@ const CommunityPage = ({ community }) => {
       <CommunityProvider
         community={community}
       >
-        <SEO
-          image={`https://arweave.net/${community.imageTxId}`}
-        />
-        <Toolbar />
-        <MastHead />
-        <FeedContainer>
-          <FeedHeader>
+        <SubscriptionProvider>
+          <SEO
+            image={`https://arweave.net/${community.imageTxId}`}
+          />
+          <Toolbar />
+          <MastHead />
+          <FeedContainer>
+            <FeedHeader>
             READ THE LATEST
-          </FeedHeader>
-          <Feed/>
-        </FeedContainer>
+            </FeedHeader>
+            <Feed/>
+          </FeedContainer>
+        </SubscriptionProvider>
       </CommunityProvider>
     </ Container>
   )

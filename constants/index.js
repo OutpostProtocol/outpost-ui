@@ -22,3 +22,11 @@ export const CONNECTOR_NAMES = {
 export const WC_PROBLEM_WALLETS = ['Argent']
 
 export const PLACEHOLDER_FT_IMG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAACoCAMAAABt9SM9AAAAA1BMVEXExMQCQxelAAAAR0lEQVR4nO3BAQEAAACCIP+vbkhAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO8GxYgAAb0jQ/cAAAAASUVORK5CYII'
+
+export const TOKEN_ABI = [
+  'function balanceOf(address owner) view returns (uint256)',
+  'function decimals() view returns (uint8)',
+  'function symbol() view returns (string)'
+]
+
+export const SUBSCRIPTION_ADDRESS = '0x17C7790a2FC26f792ed4fd7Ffda3C6d4F8441554'

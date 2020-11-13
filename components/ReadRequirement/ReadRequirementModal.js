@@ -36,7 +36,7 @@ const ContentContainer = styled('div')({
 
 const ReadRequirementModal = ({ isOpen, handleClose, handleUpdate, initialReadRequirement }) => {
   const [readRequirement, setReadRequirement] = useState(initialReadRequirement)
-  const community = useCommunity()
+  const { community } = useCommunity()
 
   return (
     <ModalContainer

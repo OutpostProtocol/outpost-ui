@@ -115,7 +115,7 @@ const LeftToolbar = styled('div')({
 
 const CommonToolbar = ({ children, prevUrl }) => {
   const router = useRouter()
-  const community = useCommunity()
+  const { community } = useCommunity()
 
   const handleBack = () => {
     if (window.history > 2) {
