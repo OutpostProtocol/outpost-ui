@@ -4,7 +4,7 @@ import React, {
 import { useWeb3React } from '@web3-react/core'
 import { ethers } from 'ethers'
 import {
-  SubscriptionABI, Framework, ISuperTokenABI, ERC20WithTokenInfoABI, SfABI
+  SubscriptionABI, Framework, ISuperTokenABI, ERC20WithTokenInfoABI
 } from 'outpost-subscriptions'
 
 import { SUBSCRIPTION_ADDRESS } from '../constants'
@@ -30,6 +30,7 @@ export const SubscriptionProvider = ({ children }) => {
   const [superTokenAllowance, setSuperTokenAllowance] = useState(0)
   const [hasSubscription, setHasSubscription] = useState(false)
   const [idaIndex, setIdaIndex] = useState(0)
+  const [abiCoder] = useState(new ethers.utils.AbiCoder())
 
   const handleCheckSubscription = useCallback(
     async () => {
@@ -59,15 +60,18 @@ export const SubscriptionProvider = ({ children }) => {
   }
 
   const terminateSubscription = async () => {
+    console.log('calling terminate flow')
     await sf.host.callAgreement(
       sf.agreements.cfa.address,
-      sf.agreements.cfa.contract.methods.deleteFlow(
-        superTokenAddress,
-        account,
-        subContract.address,
-        '0x'
+      sf.agreements.cfa.interface.encodeFunctionData(
+        'deleteFlow',
+        [
+          superTokenAddress,
+          account,
+          subContract.address,
+          '0x'
+        ]
       )
-        .encodeABI()
     )
 
     await handleCheckSubscription()
@@ -78,12 +82,11 @@ export const SubscriptionProvider = ({ children }) => {
       if (superTokenAllowance.lt(amount)) {
         await acceptedToken.approve(
           superTokenAddress,
-          amount.toString(),
-          { from: account }
+          amount.toString()
         )
       }
     },
-    [acceptedToken, superTokenAllowance, account, superTokenAddress]
+    [acceptedToken, superTokenAllowance, superTokenAddress]
   )
 
   const extendSubscription = async (amount) => {
@@ -91,7 +94,7 @@ export const SubscriptionProvider = ({ children }) => {
     await checkApproval(amount)
 
     const xToken = new ethers.Contract(superTokenAddress, ISuperTokenABI, window.web3.getSigner())
-    await xToken.upgrade(amount.toString(), { from: account })
+    await xToken.upgrade(amount.toString())
   }
 
   const subscribe = async (amount) => {
@@ -101,7 +104,7 @@ export const SubscriptionProvider = ({ children }) => {
       [
         2, // upgrade to super token
         superTokenAddress,
-        sf.web3.eth.abi.encodeParameters(
+        abiCoder.encode(
           ['uint256'],
           [amount.toString()]
         )
@@ -109,18 +112,19 @@ export const SubscriptionProvider = ({ children }) => {
       [
         4, // create constant flow (10/mo)
         sf.agreements.cfa.address,
-        sf.agreements.cfa.contract.methods
-          .createFlow(
+        sf.agreements.cfa.interface.encodeFunctionData(
+          'createFlow',
+          [
             superTokenAddress,
             subContract.address,
             flowRate.toString(),
             '0x'
-          )
-          .encodeABI()
+          ]
+        )
       ]
     ]
 
-    await sf.host.batchCall(call, { from: account })
+    await sf.host.batchCall(call)
     await handleCheckSubscription()
   }
 
